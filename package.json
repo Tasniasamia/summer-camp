@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "antd": "^5.26.7",
+    "dayjs": "^1.11.13",
     "gsap": "^3.13.0",
+    "jodit-react": "^5.2.19",
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",

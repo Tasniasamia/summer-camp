@@ -30,30 +30,26 @@ const data = {
   navMain: [
     {
       title: "Overview",
-      url: "/",
+      url: "/admin",
       icon: FiHome,
       isActive: true,
     },
     {
       title: "Classes",
-      url: "/class",
+      url: "/admin/class",
       icon: FiBarChart2,
       badge: "New",
       items: [
-        { title: "Classes", url: "/class" , isActive: true },
-        { title: "Create Class", url: "/class/add" },
-        { title: "Enrolled Class", url: "/class/enrolled"},
+        { title: "Classes", url: "/admin/class" , isActive: true },
+        { title: "Create Class", url: "/admin/class/add" },
+        { title: "Enrolled Class", url: "/admin/class/enrolled"},
       ],
     },
     {
       title: "Instructor",
-      url: "/instrutor",
+      url: "/admin/instrutor",
       icon: FiUsers,
-      badge: "1,234",
-      items: [
-        { title: "All Instructor", url: "/" },
-        { title: "Customer Support", url: "#" },
-      ],
+  
     },
    
     {

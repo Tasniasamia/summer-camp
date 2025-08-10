@@ -8,7 +8,7 @@ export default function HeroSection() {
       {/* Background decorative elements */}
       <div className="absolute inset-0 bg-[url('/summer-camp-pattern.png')] opacity-5"></div>
 
-      <div className="container mx-auto px-4  2xl:py-10 xl:py-44 lg:py-44 md:py-40 py-48">
+      <div className="container mx-auto px-4 py-44">
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
           {/* Left Content */}
           <div className="space-y-8 text-center lg:text-left">
