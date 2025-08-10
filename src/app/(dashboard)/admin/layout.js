@@ -60,18 +60,13 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/admin/settings",
       icon: FiSettings,
-      items: [
-        { title: "General", url: "#" },
-        { title: "Security", url: "#" },
-        { title: "Notifications", url: "#" },
-        { title: "Billing", url: "#" },
-      ],
+     
     },
     {
       title: "Help & Support",
-      url: "#",
+      url: "/admin/help",
       icon: FiHelpCircle,
     },
   ],
@@ -195,13 +190,13 @@ function AppSidebar({ collapsed, setCollapsed }) {
         <button
           onClick={() => setCollapsed(!collapsed)}
           aria-label="Toggle Sidebar"
-          className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white"
+          className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-yellow-600 text-white"
         >
           <FiMenu className="h-5 w-5" />
         </button>
         {!collapsed && (
           <div className="flex flex-col leading-tight text-sm truncate">
-            <span className="font-semibold truncate">Dashboard Pro</span>
+            <span className="font-semibold truncate">Summer Camp</span>
             <span className="text-xs text-gray-500 truncate">Enterprise</span>
           </div>
         )}

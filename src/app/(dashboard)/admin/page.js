@@ -2,7 +2,7 @@ import React from "react"
 
 export default function Dashboard() {
   return (
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <div className="flex flex-1 flex-col gap-4  pt-0">
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
           <div className="aspect-video rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950 dark:to-indigo-900 p-6 flex items-center justify-center">
             <div className="text-center">
@@ -29,7 +29,7 @@ export default function Dashboard() {
             {[1, 2, 3, 4, 5].map((item) => (
               <div
                 key={item}
-                className="flex items-center space-x-4 p-4 bg-background rounded-lg border"
+                className="flex items-center space-x-4 p-4 bg-background rounded-lg border border-gray-200"
               >
                 <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center text-white font-semibold">
                   {item}
