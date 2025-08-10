@@ -19,7 +19,7 @@ const BackButton = () => {
 
 const Title = ({ title, noBack = true, customComponent }) => {
   return (
-    <div className="relative mb-6 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 via-yellow-50 to-amber-50 p-6 sm:p-4 shadow-2xl">
+    <div className="relative mb-6 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 via-yellow-50 to-amber-50 p-6 sm:p-4 ">
       <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-gradient-to-br from-orange-200 to-yellow-200 opacity-30 blur-xl"></div>
       <div className="absolute -bottom-6 -left-6 h-32 w-32 rounded-full bg-gradient-to-tr from-amber-200 to-orange-200 opacity-20 blur-2xl"></div>
 

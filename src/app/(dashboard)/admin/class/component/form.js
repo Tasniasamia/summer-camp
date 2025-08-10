@@ -7,10 +7,9 @@ import {
   Select,
   TimePicker,
   DatePicker,
-  Button,
 } from "antd";
 import JoditEditor from 'jodit-react';
-import dayjs from "dayjs";
+import ImageInput from "@/components/common/form/image";
 
 const { Option } = Select;
 
@@ -58,13 +57,37 @@ const ClassForm = () => {
       }}
     >
       <Form.Item
+        label="Upload Image"
+        name="image"
+        rules={[{ required: true, message: 'Please upload an image!' }]}
+      >
+        <ImageInput max={1} name="image" />
+      </Form.Item>
+      <Form.Item
         label="Name"
         name="name"
         rules={[{ required: true, message: "Please input the class name" }]}
       >
         <Input placeholder="Enter class name" />
       </Form.Item>
-
+      <Form.Item
+        label="Category"
+        name="category"
+        rules={[{ required: true, message: "Please select a category" }]}
+      >
+        <Select
+          placeholder="Select category"
+          options={categories}
+          allowClear
+        />
+      </Form.Item>
+      <Form.Item
+        label="Price"
+        name="price"
+        required
+      >
+        <InputNumber min={0} max={5}  style={{ width: "100%" }} />
+      </Form.Item>
       <Form.Item
         label="Instructor"
         name="instructor"
@@ -76,7 +99,6 @@ const ClassForm = () => {
       <Form.Item
         label="Rate"
         name="rate"
-        rules={[{ required: true, message: "Please input the rating" }]}
       >
         <InputNumber min={0} max={5} step={0.1} style={{ width: "100%" }} />
       </Form.Item>
@@ -151,17 +173,7 @@ const ClassForm = () => {
         <InputNumber min={0} style={{ width: "100%" }} />
       </Form.Item>
 
-      <Form.Item
-        label="Category"
-        name="category"
-        rules={[{ required: true, message: "Please select a category" }]}
-      >
-        <Select
-          placeholder="Select category"
-          options={categories}
-          allowClear
-        />
-      </Form.Item>
+     
 
       <Form.Item>
         <button type="primary" htmlType="submit" className="w-full text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-lg shadow-lg"

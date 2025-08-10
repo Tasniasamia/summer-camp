@@ -1,11 +1,22 @@
 "use client";
-import React from 'react';
-import { Table as AntTable } from 'antd';
+import React from "react";
+import { Table as AntTable } from "antd";
 import { FaEye, FaPencilAlt } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
+import SearchInput from "../search";
 
-const CommonTable = ({ columns, data, noActions, onView, onEdit, onDelete, loading, onPageChange ,pagination}) => {
-
+const CommonTable = ({
+  isSearch,
+  columns,
+  data,
+  noActions,
+  onView,
+  onEdit,
+  onDelete,
+  loading,
+  onPageChange,
+  pagination,
+}) => {
   let cols = noActions
     ? columns
     : [
@@ -25,7 +36,10 @@ const CommonTable = ({ columns, data, noActions, onView, onEdit, onDelete, loadi
                 </button>
               )}
 
-              {record.disableEdit === 1 && !onView && record.disableDelete === 1 && '-'}
+              {record.disableEdit === 1 &&
+                !onView &&
+                record.disableDelete === 1 &&
+                "-"}
 
               {onEdit && record?.disableEdit !== 1 && (
                 <button
@@ -47,31 +61,34 @@ const CommonTable = ({ columns, data, noActions, onView, onEdit, onDelete, loadi
                 </button>
               )}
             </div>
-          )
-        }
+          ),
+        },
       ];
 
   return (
-    <div style={{ overflowX: "auto", width: "100%" }}>
-
-    <AntTable
-      columns={cols}
-      dataSource={pagination? data?.docs:data}
-      loading={loading}
-      rowKey={(record) => record._id}
-      pagination={
-        pagination
-          ? {
-              current: data?.page || 1,
-              pageSize: data?.limit || 10,
-              total: data?.totalDocs || 0,
-              onChange: (page, pageSize) => {
-                if (onPageChange) onPageChange(page, pageSize);
+    <div
+      style={{ overflowX: "auto", width: "100%" }}
+      className="bg-gradient-to-br from-orange-50 via-yellow-50 to-amber-50 p-6 sm:p-4 shadow-2xl"
+    >
+      {isSearch && <SearchInput />}
+      <AntTable
+        columns={cols}
+        dataSource={pagination ? data?.docs : data}
+        loading={loading}
+        rowKey={(record) => record._id}
+        pagination={
+          pagination
+            ? {
+                current: data?.page || 1,
+                pageSize: data?.limit || 10,
+                total: data?.totalDocs || 0,
+                onChange: (page, pageSize) => {
+                  if (onPageChange) onPageChange(page, pageSize);
+                },
               }
-            }
-          : false
-      }
-    />
+            : false
+        }
+      />
     </div>
   );
 };

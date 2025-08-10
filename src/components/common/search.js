@@ -31,17 +31,17 @@ const SearchInput = ({ onSearch, placeholder = "Search by name...", debounceTime
   };
 
   return (
-    <form onSubmit={handleSubmit} className={`flex items-center gap-2 ${className}`}>
+    <form onSubmit={handleSubmit} className={`flex items-center gap-2 py-2 ${className}`}>
       <input
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 w-56"
+        className="px-3 py-2 border rounded-md border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400 w-56"
       />
       <button
         type="submit"
-        className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        className="px-3 py-2 cursor-pointer text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold"
       >
         Search
       </button>

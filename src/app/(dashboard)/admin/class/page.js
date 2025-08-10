@@ -124,18 +124,19 @@ const page = () => {
               push("/admin/class/add");
             }}
             htmlType="submit"
-            className="px-4 cursor-pointer text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-lg shadow-lg"
+            className="px-4 cursor-pointer text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base"
           >
             {" "}
             Add New Class
           </button>
         }
       />
-
+    
       <CommonTable
         columns={columns}
+        isSearch={true}
         data={data}
-        onView={(rec) => console.log("view", rec)}
+        onView={(rec) => {return (push(`/admin/class/${rec?.name}`))}}
         onEdit={(rec) => {
           retrun(push(`/admin/class/edit/${rec?.name}`));
         }}

@@ -2,13 +2,12 @@
 
 import Link from "next/link"
 import React, { useState } from "react"
-import { FaGlobe } from "react-icons/fa"
+import { FaGlobe, FaWallet } from "react-icons/fa"
 import {
   FiHome,
   FiUsers,
   FiBarChart2,
   FiSettings,
-  FiShoppingBag,
   FiMessageSquare,
   FiSearch,
   FiBell,
@@ -38,7 +37,6 @@ const data = {
       title: "Classes",
       url: "/admin/class",
       icon: FiBarChart2,
-      badge: "New",
       items: [
         { title: "Classes", url: "/admin/class" , isActive: true },
         { title: "Create Class", url: "/admin/class/add" },
@@ -46,18 +44,18 @@ const data = {
       ],
     },
     {
-      title: "Instructor",
-      url: "/admin/instrutor",
+      title: "User",
+      url: "/admin/user",
       icon: FiUsers,
   
     },
-   
     {
-      title: "Messages",
-      url: "#",
-      icon: FiMessageSquare,
-      badge: "12",
+      title: "Wallet",
+      url: "/admin/wallet",
+      icon: FaWallet,
+  
     },
+   
   ],
   navSecondary: [
     {
