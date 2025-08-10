@@ -1,4 +1,6 @@
+"use client";
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import {
     FaHeart,
@@ -10,6 +12,7 @@ import {
   } from "react-icons/fa";
 
 const ClassCard = ({classItem,wishlist,enrolledClasses}) => {
+  const {push}=useRouter();
     return (
         <div
         className="group hover:shadow-2xl transition-all duration-300 border border-gray-100 rounded-lg shadow-sm overflow-hidden"
@@ -104,11 +107,11 @@ const ClassCard = ({classItem,wishlist,enrolledClasses}) => {
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
             <button
-              onClick={() => enrollInClass(classItem.id)}
+              onClick={() => {push(`/checkout/${classItem.id}`)}}
               disabled={
                 enrolledClasses.includes(classItem.id) || classItem.enrolled >= classItem.capacity
               }
-              className={`flex-1 text-white py-2 rounded-lg font-semibold transition ${
+              className={`flex-1 cursor-pointer text-white py-2 rounded-lg font-semibold transition ${
                 enrolledClasses.includes(classItem.id)
                   ? 'bg-gray-400 cursor-default'
                   : classItem.enrolled >= classItem.capacity

@@ -7,7 +7,7 @@ const Banner = ({ title }) => {
       className="relative  bg-gradient-to-br from-orange-50 via-yellow-50 to-green-50 overflow-hidden h-[300px]  "
     >       <div className="absolute inset-0 bg-[url('/summer-camp-pattern.png')] opacity-5"></div>
 
-      <div className="custom-container text-center md:pt-[100px] pt-[50px]">
+      <div className="container text-center md:pt-[100px] pt-[50px]">
         <h2 className="header-1 text-orange-500  ">
           {title}
         </h2>
