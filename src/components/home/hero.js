@@ -1,6 +1,8 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import { FaStar, FaMapMarkerAlt, FaUsers, FaCalendarAlt, FaArrowRight, FaPlay } from "react-icons/fa";
+import { message } from "antd";
 
 export default function HeroSection() {
   return (
@@ -52,14 +54,14 @@ export default function HeroSection() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <button
-                className="flex items-center justify-center bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group rounded-lg"
+                className="flex text-white items-center justify-center bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group rounded-lg"
               >
                 Register Now
                 <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
 
-              <button
-                className="flex items-center justify-center border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-8 py-4 text-lg font-semibold group rounded-lg"
+              <button onClick={()=>{message.success("OKAY");console.log("hello")}}
+                className="flex items-center cursor-pointer  justify-center border-2 border-orange-500 !text-orange-600 hover:bg-orange-50 px-8 py-4 text-lg font-semibold group rounded-lg"
               >
                 <FaPlay className="mr-2 group-hover:scale-110 transition-transform" />
                 Watch Video

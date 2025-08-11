@@ -1,30 +1,67 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Form, Input, Button, Card, Typography, Space, Divider, Checkbox, message } from "antd"
-import { FaUser, FaLock, FaEnvelope, FaPhone, FaCalendarAlt } from "react-icons/fa"
+import { useState } from "react";
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Typography,
+  Space,
+  Divider,
+  Checkbox,
+  message,
+  Spin,
+} from "antd";
+import {
+  FaUser,
+  FaLock,
+  FaEnvelope,
+  FaPhone,
+  FaCalendarAlt,
+} from "react-icons/fa";
+import { useAuth } from "@/helpers/context/authContext";
 
-const { Title, Text } = Typography
+const { Title, Text } = Typography;
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true)
-  const [loading, setLoading] = useState(false)
-  const [form] = Form.useForm()
-
-  const handleSubmit = (values) => {
-    setLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false)
-      message.success(isLogin ? "Login successful!" : "Registration successful!")
-      console.log("Form values:", values)
-    }, 1500)
-  }
+  const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
+  const { currentUser, signup, signin, signout, resetPassword, profileUpdate }=useAuth();
+  console.log("loading",loading);
+  const handleSubmit = async (values) => {
+    try {
+      setLoading(true);
+  
+      if (!isLogin) {
+        // Signup part
+        await signup(values.email, values.password);
+       alert("Registration Successful");
+        setIsLogin(true);
+      } else {
+        // Signin part
+        await signin(values.email, values.password);
+      alert("Signin Successfully");
+      }
+    } catch (error) {
+      // Error handle
+      if (!isLogin) {
+        alert("Registration Failed");
+      } else {
+        alert("Login Failed");
+      }
+    } finally {
+      setLoading(false); // Loading off no matter success or failure
+    }
+  };
+  
+  
 
   const toggleMode = () => {
-    setIsLogin(!isLogin)
-    form.resetFields()
-  }
+    setIsLogin(!isLogin);
+    form.resetFields();
+  };
 
   return (
     <div className="min-h-screen  pt-44 mb-44 flex items-center justify-center p-4 relative">
@@ -66,7 +103,12 @@ export default function AuthPage() {
         >
           {!isLogin && (
             <>
-              <Form.Item name="fullName" rules={[{ required: true, message: "Please enter your full name!" }]}>
+              <Form.Item
+                name="fullName"
+                rules={[
+                  { required: true, message: "Please enter your full name!" },
+                ]}
+              >
                 <Input
                   prefix={<FaUser className="text-gray-400" />}
                   placeholder="Full Name"
@@ -74,22 +116,9 @@ export default function AuthPage() {
                 />
               </Form.Item>
 
-              <Form.Item name="age" rules={[{ required: true, message: "Please enter your age!" }]}>
-                <Input
-                  prefix={<FaCalendarAlt className="text-gray-400" />}
-                  placeholder="Age"
-                  type="number"
-                  className="rounded-lg h-12"
-                />
-              </Form.Item>
+             
 
-              <Form.Item name="phone" rules={[{ required: true, message: "Please enter your phone number!" }]}>
-                <Input
-                  prefix={<FaPhone className="text-gray-400" />}
-                  placeholder="Phone Number"
-                  className="rounded-lg h-12"
-                />
-              </Form.Item>
+          
             </>
           )}
 
@@ -97,7 +126,7 @@ export default function AuthPage() {
             name="email"
             rules={[
               { required: true, message: "Please enter your email!" },
-              { type: "email", message: "Please enter a valid email!" }
+              { type: "email", message: "Please enter a valid email!" },
             ]}
           >
             <Input
@@ -111,7 +140,7 @@ export default function AuthPage() {
             name="password"
             rules={[
               { required: true, message: "Please enter your password!" },
-              { min: 6, message: "Password must be at least 6 characters!" }
+              { min: 6, message: "Password must be at least 6 characters!" },
             ]}
           >
             <Input.Password
@@ -130,11 +159,11 @@ export default function AuthPage() {
                 ({ getFieldValue }) => ({
                   validator(_, value) {
                     if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve()
+                      return Promise.resolve();
                     }
-                    return Promise.reject(new Error("Passwords do not match!"))
-                  }
-                })
+                    return Promise.reject(new Error("Passwords do not match!"));
+                  },
+                }),
               ]}
             >
               <Input.Password
@@ -165,10 +194,9 @@ export default function AuthPage() {
           <Form.Item className="!mb-6">
             <button
               htmlType="submit"
-              loading={loading}
-              className="w-full text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-lg shadow-lg"
+              className="w-full !text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-lg shadow-lg"
             >
-              {isLogin ? "🚀 Sign In" : "🎉 Create Account"}
+              {loading ? <Spin/> : isLogin ? "🚀 Sign In" : "🎉 Create Account"}
             </button>
           </Form.Item>
         </Form>
@@ -189,7 +217,10 @@ export default function AuthPage() {
 
           {isLogin && (
             <div className="pt-2">
-              <a href="#" className="text-orange-600 hover:text-orange-700 text-sm">
+              <a
+                href="#"
+                className="text-orange-600 hover:text-orange-700 text-sm"
+              >
                 Forgot your password? 🤔
               </a>
             </div>
@@ -203,5 +234,5 @@ export default function AuthPage() {
         </div>
       </Card>
     </div>
-  )
+  );
 }
