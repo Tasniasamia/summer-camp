@@ -28,7 +28,6 @@ const UserDashBoardTable = ({
   onSearchChange,
 
 }) => {
-  const i18n = useI18n();
 //   const handleEditClick = (data) => {
 //     onEdit(data);
 //   };
@@ -208,7 +207,6 @@ const UserDashBoardTable = ({
 export default UserDashBoardTable;
 
 export const DetailTable = ({ data, columns, title, actions }) => {
-  const i18n = useI18n();
   return (
     <div className="shadow-md rounded-md p-4">
       {!!title && (

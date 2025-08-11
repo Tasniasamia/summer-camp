@@ -62,7 +62,9 @@ export function FirebaseAuthProvider({ children }) {
 
   // Signout function
   function signout() {
-    return signOut(auth);
+    signOut(auth);
+    setCurrentUser("");
+     
   }
 
   // Reset password

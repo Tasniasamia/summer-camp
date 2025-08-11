@@ -12,6 +12,7 @@ import {
   Checkbox,
   message,
   Spin,
+  Radio,
 } from "antd";
 import {
   FaUser,
@@ -21,42 +22,56 @@ import {
   FaCalendarAlt,
 } from "react-icons/fa";
 import { useAuth } from "@/helpers/context/authContext";
-
+import toast from "react-hot-toast";
 const { Title, Text } = Typography;
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-  const { currentUser, signup, signin, signout, resetPassword, profileUpdate }=useAuth();
-  console.log("loading",loading);
+  const { currentUser, signup, signin, signout, resetPassword, profileUpdate } =
+    useAuth();
+  console.log("loading", loading);
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-  
       if (!isLogin) {
-        // Signup part
         await signup(values.email, values.password);
-       alert("Registration Successful");
-        setIsLogin(true);
+        const res = await fetch("/api/user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: values?.email,
+            role: values?.role,
+            name: values?.fullName,
+          }),
+        });
+        const data = await res.json();
+        console.log("data", data);
+        if (res.ok) {
+          setIsLogin(true);
+          toast.success("User Created Successfully");
+        } else {
+          toast.error("No Create User Into Database");
+        }
       } else {
         // Signin part
-        await signin(values.email, values.password);
-      alert("Signin Successfully");
+        const res = await fetch(`/api/user?email=${values?.email}`);
+        const data=await res.json();
+        console.log("user data",data);
+        if(data?.id){
+          await signin(values.email, values.password);
+          toast.success("Signin Successfully");
+        }
+       
       }
     } catch (error) {
-      // Error handle
-      if (!isLogin) {
-        alert("Registration Failed");
-      } else {
-        alert("Login Failed");
-      }
+      console.error(error);
+      toast.error("Authentication Failed");
     } finally {
-      setLoading(false); // Loading off no matter success or failure
+      setLoading(false); // success বা failure যেটাই হোক loading বন্ধ হবে
     }
   };
-  
-  
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
@@ -102,6 +117,18 @@ export default function AuthPage() {
           className="space-y-4"
         >
           {!isLogin && (
+            <Form.Item
+              name="role"
+              rules={[{ required: true, message: "Please select your role!" }]}
+            >
+              <Radio.Group>
+                <Radio value="instructor">Instructor</Radio>
+                <Radio value="user">User</Radio>
+              </Radio.Group>
+            </Form.Item>
+          )}
+
+          {!isLogin && (
             <>
               <Form.Item
                 name="fullName"
@@ -115,10 +142,6 @@ export default function AuthPage() {
                   className="rounded-lg h-12"
                 />
               </Form.Item>
-
-             
-
-          
             </>
           )}
 
@@ -192,11 +215,14 @@ export default function AuthPage() {
           )}
 
           <Form.Item className="!mb-6">
-            <button
-              htmlType="submit"
-              className="w-full !text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-lg shadow-lg"
-            >
-              {loading ? <Spin/> : isLogin ? "🚀 Sign In" : "🎉 Create Account"}
+            <button className="w-full !text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-lg shadow-lg">
+              {loading ? (
+                <Spin />
+              ) : isLogin ? (
+                "🚀 Sign In"
+              ) : (
+                "🎉 Create Account"
+              )}
             </button>
           </Form.Item>
         </Form>
