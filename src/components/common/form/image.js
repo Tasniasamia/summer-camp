@@ -31,26 +31,22 @@ const ImageInput = ({ max = 1, name = "file" }) => {
     // এখানে আমি প্রথম ফাইল নিয়ে দেখাচ্ছি
     if (newFileList.length > 0) {
       const file = newFileList[0].originFileObj;
+      console.log("newfileList",newFileList);
       if (file) {
         const formData = new FormData();
-        formData.append(name, file);
-
-        try {
-          const response = await axios.post("/api/upload", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              // Authorization: `Bearer ${your_token}`, // যদি লাগে
-            },
-          });
-
-          const imageUrl = response.data.url;
-          message.success("Image uploaded successfully!");
-          console.log("Uploaded Image URL:", imageUrl);
-          // এখানে তোমার দরকার হলে এই URL স্টেট বা ফর্মে সেট করতে পারো
-        } catch (error) {
-          message.error("Upload failed!");
-          console.error(error);
-        }
+        formData.append(name, file); // এখানে name হচ্ছে "file"
+        formData.append('upload_preset', 'first_preset'); // ঠিক করা হয়েছে
+        formData.append('cloud_name', 'dtjf2nn9o');
+        
+        const res = await fetch(`https://api.cloudinary.com/v1_1/dtjf2nn9o/image/upload`, {
+          method: "POST",
+          body: formData
+        });
+        
+        const image = await res.json();
+        console.log("image", image);
+        
+    
       }
     }
   };
