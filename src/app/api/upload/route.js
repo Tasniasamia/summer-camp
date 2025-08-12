@@ -1,37 +1,90 @@
-// app/api/upload/route.js
-import { NextResponse } from "next/server";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import app from "../../../../firebase";
+//unsigned
+// export async function POST(request) {
+//   try {
+//     const formData = await request.formData();
+//     const file = formData.get('file');
 
-const storage = getStorage(app);
 
-export async function POST(req) {
+
+//     const uploadData = new FormData();
+//     uploadData.append('file', file);
+//     uploadData.append('upload_preset', 'first_preset');
+
+//     const res = await fetch(
+//       `https://api.cloudinary.com/v1_1/dtjf2nn9o/image/upload`,
+//       {
+//         method: 'POST',
+//         body: uploadData,
+//       }
+//     );
+
+//     const image = await res.json();
+//     console.log("image server",image);
+//     return new Response(JSON.stringify(image), { status: 200 });
+//   } catch (error) {
+//     console.error(error);
+//     return new Response(JSON.stringify({ error: 'Upload failed' }), {
+//       status: 500,
+//     });
+//   }
+// }
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+export async function POST(request) {
   try {
-    // formData থেকে ফাইল পড়া
-    const formData = await req.formData();
-    const file = formData.get("image");
+    const formData = await request.formData();
+    const file = formData.get('file');
 
+    // file is a Blob/File object
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+      return new Response(JSON.stringify({ error: 'File missing' }), { status: 400 });
     }
 
-    // ফাইলকে ArrayBuffer → Buffer-এ কনভার্ট করা
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Convert file to Buffer
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Firebase Storage-এ আপলোড
-    const fileName = `${Date.now()}-${file.name}`;
-    const storageRef = ref(storage, `uploads/${fileName}`);
-    await uploadBytes(storageRef, buffer, {
-      contentType: file.type,
-    });
+    // Upload using cloudinary uploader, method: upload_stream is recommended for buffers
+    const uploadFromBuffer = () =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'your_folder' }, // optional folder
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(buffer);
+      });
 
-    // Public URL নেওয়া
-    const downloadURL = await getDownloadURL(storageRef);
+    const result = await uploadFromBuffer();
+    console.log("server result",result);
 
-    return NextResponse.json({ url: downloadURL });
+    return new Response(JSON.stringify(result), { status: 200 });
   } catch (error) {
-    console.error("Upload Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error(error);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const { public_id } = await request.json();  // frontend theke public_id paben
+
+    if (!public_id) {
+      return new Response(JSON.stringify({ error: "public_id missing" }), { status: 400 });
+    }
+
+    const result = await cloudinary.uploader.destroy(public_id);
+
+    return new Response(JSON.stringify(result), { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
