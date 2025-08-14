@@ -7,7 +7,15 @@ export async function GET(request) {
     try {
       const { searchParams } = new URL(request.url);
       const email = searchParams.get("email");
+      const role = searchParams.get("role");
+
       console.log(searchParams?.get("email"));
+      if(role){
+        const roleUser = await prisma.user.findMany({
+          where: { role:role },
+        });
+        return new Response(JSON.stringify(roleUser),{status:200})
+      }
       if (email) {
         const user = await prisma.user.findUnique({
           where: { email:email },
@@ -83,7 +91,6 @@ export async function PUT(request) {
 
     return new Response(JSON.stringify(updatedUser), { status: 200 });
   } catch (error) {
-    // handle user not found error
     if (error.code === 'P2025') {
       return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
     }

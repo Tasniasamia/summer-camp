@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -13,13 +7,64 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+enum UserRole {
+  admin
+  student
+  instructor
+}
+
 model User {
-  id           Int     @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   email        String?  @unique
-  password     String?  
+  password     String?
   address      String?
   phone_number String?
   image        String?
-  role         String?
+  role         UserRole?
   name         String?
+
+  classInstructor Class[] @relation("InstructorToClass")  // multiple classes
+   enroll enrollClass[]
+}
+
+model Class {
+  id          Int      @id @default(autoincrement())
+  name        String?
+  price       Float?
+  rate        Float?
+  description String?   @db.VarChar(10000)
+
+  duration    String?
+  time        String?
+  days        Json?     // JSON type
+  place       String?
+  createdAt   DateTime  @default(now())
+  category    String?  
+  sit         Int?
+  enrollment  Int?
+  status      String?
+  image       String?
+ 
+  instructorId Int
+  instructor   User     @relation("InstructorToClass", fields: [instructorId], references: [id])
+  
+  enroll enrollClass[]
+}
+
+enum paymentStatus {
+  paid
+  failed
+  pending
+}
+
+model enrollClass {
+  id            Int           @id @default(autoincrement())
+  name          String?
+  classId       Int 
+  class         Class         @relation(fields: [classId], references: [id])
+  userId        Int 
+  user          User          @relation(fields: [userId], references: [id])
+  status        paymentStatus @default(pending)
+  transactionId String? 
 }
