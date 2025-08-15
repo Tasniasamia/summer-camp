@@ -13,6 +13,7 @@ import {
 } from "firebase/auth";
 import app from "../../../firebase";
 import { message } from "antd";
+import toast from "react-hot-toast";
 const auth = getAuth(app);
 const FirebaseAuthContext = createContext();
 
@@ -32,23 +33,12 @@ export function FirebaseAuthProvider({ children }) {
       console.log("res,user",res?.user);
       if(res?.user){
         message.success("Registration Successfull");
-        // sendEmailVerification(res.user).then(()=>{
-          
-        //   if(!res?.user?.emailVerified){
-        //       setTimeout(()=>{
-        //       setLoading2(false);
-        //       deleteUser(res?.user).then(() => message.error("User deleted ! please signup again"));
-        //       },60000)
+        sendEmailVerification(res.user).then(()=>{
+          if(!res?.user?.emailVerified){
+                toast.success("Please Verify your Email");
               
-           
-        //   }
-        //    if(res?.user?.emailVerified){
-        //     setLoading2(false);
-        //     return message.success("User Verifed Successfully")
-        //   }
-          
-          
-        // })
+            }
+             })
 
       }
     })
@@ -56,9 +46,17 @@ export function FirebaseAuthProvider({ children }) {
   }
 
   // Signin function
-  function signin(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
+  async function signin(email, password) {
+    const res = await signInWithEmailAndPassword(auth, email, password);
+    if (!res.user.emailVerified) {
+      await signOut(auth);
+      toast.error("Please verify your email before login.");
+      throw new Error("Email not verified");
+    }
+    return res;
   }
+  
+
 
   // Signout function
   function signout() {

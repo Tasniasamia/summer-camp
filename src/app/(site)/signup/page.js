@@ -37,32 +37,45 @@ export default function AuthPage() {
       setLoading(true);
       if (!isLogin) {
         await signup(values.email, values.password);
-        const res = await fetch("/api/user", {
+   
+      } else {
+        await signin(values.email, values.password)
+        const loginRes = await signin(values.email, values.password);
+
+        // এখানে আসবে শুধু তখনই যখন email verified হবে
+        const dbRes = await fetch("/api/user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: values?.email,
             role: values?.role,
-            name: values?.fullName,
+            name: values?.fullName
           }),
         });
-        const data = await res.json();
-        console.log("data", data);
-        if (res.ok) {
+      
+        const dbData = await dbRes.json();
+        console.log("DB response", dbData);
+      
+        if (dbRes.ok) {
           setIsLogin(true);
           toast.success("User Created Successfully");
         } else {
           toast.error("No Create User Into Database");
         }
-      } else {
+        // if (res.ok) {
+        //   setIsLogin(true);
+        //   toast.success("User Created Successfully");
+        // } else {
+        //   toast.error("No Create User Into Database");
+        // }
         // Signin part
-        const res = await fetch(`/api/user?email=${values?.email}`);
-        const data=await res.json();
-        console.log("user data",data);
-        if(data?.id){
-          await signin(values.email, values.password);
-          toast.success("Signin Successfully");
-        }
+        // const res = await fetch(`/api/user?email=${values?.email}`);
+        // const data=await res.json();
+        // console.log("user data",data);
+        // if(data?.id){
+        //   await signin(values.email, values.password);
+        //   toast.success("Signin Successfully");
+        // }
        
       }
     } catch (error) {
@@ -116,19 +129,19 @@ export default function AuthPage() {
           size="large"
           className="space-y-4"
         >
-          {!isLogin && (
+        
             <Form.Item
               name="role"
               rules={[{ required: true, message: "Please select your role!" }]}
             >
               <Radio.Group>
                 <Radio value="instructor">Instructor</Radio>
-                <Radio value="user">User</Radio>
+                <Radio value="student">Student</Radio>
               </Radio.Group>
             </Form.Item>
-          )}
+     
 
-          {!isLogin && (
+          {/* {!isLogin && (
             <>
               <Form.Item
                 name="fullName"
@@ -143,7 +156,7 @@ export default function AuthPage() {
                 />
               </Form.Item>
             </>
-          )}
+          )} */}
 
           <Form.Item
             name="email"

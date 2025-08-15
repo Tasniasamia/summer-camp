@@ -69,7 +69,7 @@ export async function POST(req) {
     return Response.json(
       { message: "Payment initiation failed", result },
       { status: 400 }
-      
+
     );
   }
 }
