@@ -1,14 +1,21 @@
-import Banner from '@/components/common/banner';
-import React from 'react';
+'use client';
+import { useSearchParams } from 'next/navigation';
 
-const page = () => {
-    return (
-        <div> 
-            <Banner title="Payment Cancel"/>
-           <h1>Payment Canceled</h1>
+export default function SuccessPage() {
+  const searchParams = useSearchParams();
+  const tran_id = searchParams.get('tran_id');
+  const amount = searchParams.get('amount');
+  const currency = searchParams.get('currency');
 
-        </div>
-    );
-};
+  if (!tran_id) {
+    return <p>Transaction data not found.</p>;
+  }
 
-export default page;
+  return (
+    <div className="p-6 text-center">
+      <h1 className="text-2xl font-bold text-green-600">✅ Payment Cancel</h1>
+      <p>Transaction ID: {tran_id}</p>
+      <p>Amount: {amount} {currency}</p>
+    </div>
+  );
+}

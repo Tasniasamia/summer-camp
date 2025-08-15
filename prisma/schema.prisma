@@ -56,6 +56,7 @@ enum paymentStatus {
   paid
   failed
   pending
+  cancel
 }
 
 model enrollClass {
