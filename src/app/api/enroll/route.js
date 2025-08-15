@@ -64,11 +64,12 @@ export async function POST(req) {
       },
     });
 
-    return Response.json({ GatewayPageURL: result.GatewayPageURL });
+    return Response.json({ GatewayPageURL: result.GatewayPageURL ,success:true});
   } else {
     return Response.json(
       { message: "Payment initiation failed", result },
       { status: 400 }
+      
     );
   }
 }

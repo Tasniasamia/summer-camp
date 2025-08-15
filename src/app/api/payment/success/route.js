@@ -17,7 +17,6 @@ export async function POST(req) {
         data:{sit:findClass?.sit - 1}
 
       })
-      console.log("update class",findClass?.sit);
     }
    
     if (tran_id) {
