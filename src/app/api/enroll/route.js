@@ -75,28 +75,54 @@ export async function POST(req) {
   }
   
   export async function PUT(req) {
+    console.log("coming here");
     try{
-      const data = await request.json();
+      
+      const data = await req.json();
+      console.log("data",data);
       const { id, classId,userId,status, transactionId } = data;
-      if(!transactionId){
-        return new Response(JSON.stringify({error:"transactionId is required"}),{status:400});
+      if(id || transactionId){
+        if(transactionId){
+          console.log("trasaction id");
+          console.log("findTransaction",await prisma.enrollClass.findUnique({where:{transactionId:transactionId}}))
+          const updateData=await prisma.enrollClass.update({
+            where:{transactionId:transactionId},
+            data: { status: status, transactionId:transactionId }
+          })
+          console.log("updatedata",updateData);
+          return new Response(JSON.stringify({data:updateData},{status:200}))
+        }
+        else if(id){
+        
+          const updateData=await prisma.enrollClass.update({
+            where:{id:id},
+            data:data
+          })
+          return new Response(JSON.stringify({data:updateData},{status:200}))
+        }
+        else{
+          return new Response(JSON.stringify({erro:"Id or transactionId is required"}),{status:400})
+        }
       }
-      const updateData=await prisma.enrollClass.update({
-        where:transactionId,
-        data:data
-      })
-      return new Response(JSON.stringify({data:updateData},{status:200}))
+    
     }
     catch(err){
       return new Response(JSON.stringify({error:err.message}),{status:404});
-
-    }
-    
-  }
+}
+}
 
   export async  function GET(req){
-
-    try{
+   try{
+      const searchParams=new URL(req.URL);
+      const id=searchParams.get('id');
+       if(!id){
+        return new Response(JSON.stringify({error:"Id is required"}),{status:400})
+       }
+       if(id){
+         const data=await prisma.enrollClass.findUnique({where:{id:id}});
+         return new Response (JSON.stringify({data:data}),{status:200})
+       }
+     
       const data=await prisma.enrollClass.findMany({});
       return new Response(JSON.stringify({data:data}),{status:200});
     }

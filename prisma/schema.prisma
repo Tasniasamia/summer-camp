@@ -66,5 +66,5 @@ model enrollClass {
   userId        Int 
   user          User          @relation(fields: [userId], references: [id])
   status        paymentStatus @default(pending)
-  transactionId String? 
+  transactionId String? @unique
 }
