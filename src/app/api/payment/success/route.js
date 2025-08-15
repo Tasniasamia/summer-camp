@@ -1,13 +1,24 @@
+import { PrismaClient } from "@/generated/prisma";
+const prisma = new PrismaClient();
+
 export async function POST(req) {
     const formData = await req.formData();
-  
     const tran_id = formData.get("tran_id");
     const amount = formData.get("amount");
     const currency = formData.get("currency");
-  
-    const classInfo = JSON.parse(formData.get("value_a") || '{}');
-    const userInfo = JSON.parse(formData.get("value_b") || '{}');
-  
+    const classId = formData.get("value_a") ;
+    const useId = formData.get("value_b");
+    const findClass=await prisma.class.findUnique({
+      where:{id:parseInt(classId)}
+    });
+    if(findClass){
+      const updateClass=await prisma.class.update({
+        where:{id:parseInt(classId)},
+        data:{sit:findClass?.sit - 1}
+
+      })
+      console.log("update class",findClass?.sit);
+    }
    
     if (tran_id) {
       try {

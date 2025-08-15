@@ -3,7 +3,6 @@ const prisma = new PrismaClient();
 
 export async function POST(req) {
   const body = await req.json();
-
   const { classId, userId } = body;
   const classData = await prisma.class.findUnique({
     where: { id: parseInt(classId) },
@@ -42,8 +41,8 @@ export async function POST(req) {
     product_category: "General",
     product_profile: "general",
     status: "pending",
-    class: classId,
-    user: userId,
+    value_a: classId,
+    value_b: userId,
   };
  const response = await fetch(
     "https://sandbox.sslcommerz.com/gwprocess/v4/api.php",
