@@ -23,7 +23,7 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-  const { currentUser,setCurrentUser, signup, signin, signout,loading2 } =useAuth();
+  const { currentUser,setCurrentUser, signup, signin, user,setUser,loading2 } =useAuth();
   const {push}=useRouter();
   console.log("loading", loading);
   const handleSubmit = async (values) => {
@@ -55,17 +55,17 @@ export default function AuthPage() {
              switch (dbData?.user?.role) {
                 case "instructor":
                 push("/trainer");
-                setCurrentUser(dbData?.user);
+                setUser(dbData?.user);
                 localStorage.setItem('token',dbData?.token);
                 break;
                case "admin":
                 push("/admin");
-                setCurrentUser(dbData?.user);
+                setUser(dbData?.user);
                 localStorage.setItem('token',dbData?.token);
                 break;
                 default:
                 push("/user");
-                setCurrentUser(dbData?.user);
+                setUser(dbData?.user);
                 localStorage.setItem('token',dbData?.token);
                 break;
             } }
@@ -134,8 +134,9 @@ export default function AuthPage() {
               rules={[{ required: true, message: "Please select your role!" }]}
             >
               <Radio.Group>
-                <Radio value="instructor">Instructor</Radio>
-                <Radio value="student">Student</Radio>
+              <Radio value="admin">Admin</Radio>
+              <Radio value="instructor">Instructor</Radio>
+              <Radio value="student">Student</Radio>
               </Radio.Group>
             </Form.Item>
      

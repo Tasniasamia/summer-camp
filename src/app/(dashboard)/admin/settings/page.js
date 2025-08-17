@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -17,29 +17,42 @@ import { FaUser, FaEnvelope, FaPhone, FaLock, FaCamera } from "react-icons/fa";
 import ImageInput from "@/components/common/form/image";
 import { useAuth } from "@/helpers/context/authContext";
 import toast from "react-hot-toast";
+import { useFetch } from "@/helpers/utils/queries";
 
 const { TextArea } = Input;
 
 export default function FormsPage() {
-  const [profileForm] = Form.useForm();
-  const [passwordForm] = Form.useForm();
+  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
-  const { currentUser, signup, signin, signout, resetPassword, profileUpdate ,changePassword} =
-    useAuth();
+  const { currentUser, signup, signin, signout, resetPassword, profileUpdate ,changePassword}=useAuth();
+  const { data, isLoading, error } = useFetch("profile", "/user");
+  console.log("fetchData",data);
+  useEffect(() => {
+    if (data?.data) {
+      form.setFieldsValue({
+        name: data?.data?.name || "",
+        email: data?.data?.email || "",
+        phone: data?.data?.phone || "",
+        address: data?.data?.address || "",
+        image: data?.data?.image ? [data?.data?.image] : [],
+      });
+    }
+  }, [data, form]);
   // Profile form submission
   const onProfileFinish = async (values) => {
+    console.log("Profile form values:", values);
+
     setLoading(true);
     try {
-      console.log("Profile form values:", values);
-      message.success("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
     } catch (error) {
-      message.error("Failed to update profile");
+      toast.error("Failed to update profile");
     } finally {
       setLoading(false);
     }
   };
-
+  
   // Password form submission
   const onPasswordFinish = async (values) => {
     setPasswordLoading(true);
@@ -57,22 +70,17 @@ export default function FormsPage() {
   const ProfileForm = () => (
     <Card title="Profile Information" className="w-full">
       <Form
-        form={profileForm}
+        form={form}
         layout="vertical"
         onFinish={onProfileFinish}
-        initialValues={{
-          name: "",
-          email: "",
-          phone: "",
-          address: "",
-        }}
+      
       >
         <Row gutter={24}>
           <Col xs={24} md={8}>
             <Form.Item
               label="Profile Picture"
               name="image"
-              rules={[{ required: true, message: "Please upload an image!" }]}
+              // rules={[{ required: true, message: "Please upload an image!" }]}
             >
               <ImageInput max={1} name="image" />
             </Form.Item>
@@ -163,7 +171,7 @@ export default function FormsPage() {
             <button
               type="primary"
               htmlType="submit"
-              onClick={() => passwordForm.resetFields()}
+              onClick={() => form.resetFields()}
 
               className="w-full px-4  cursor-pointer h-12 rounded-lg border border-gray-200 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base shadow-lg"
             >
@@ -178,7 +186,7 @@ export default function FormsPage() {
 
   const PasswordForm = () => (
     <Card title="Change Password" className="w-full">
-      <Form form={passwordForm} layout="vertical" onFinish={onPasswordFinish}>
+      <Form form={form} layout="vertical" onFinish={onPasswordFinish}>
         <Row gutter={16}>
           <Col xs={24} md={24}>
           <Form.Item
@@ -212,7 +220,7 @@ export default function FormsPage() {
             <button
               type="primary"
               htmlType="submit"
-              onClick={() => passwordForm.resetFields()}
+              onClick={() => form.resetFields()}
 
               className="w-full px-4  cursor-pointer h-12 rounded-lg border border-gray-200 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base shadow-lg"
             >

@@ -176,7 +176,8 @@ export async function GET(request) {
     // Format: "Bearer <token>" → শুধু token অংশ নাও
     const token = authHeader.split(" ")[1];
     const payload=verifyToken(token);
-    const user=await prisma.user.findUnique({where:parseInt(payload?.email)});
+    const user=await prisma.user.findUnique({ where: { email: payload?.email } }
+    );
     if(user){
       return new Response(JSON.stringify({data:user,success:true,msg:"Get User Successfully"},{status:200}))
     }

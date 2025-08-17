@@ -26,7 +26,7 @@ export function FirebaseAuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loading2, setLoading2] = useState(false);
-  console.log("currentUser",currentUser);
+  const [user,setUser]=useState(null);
   // Signup function
   function signup(email, password) {
     setLoading2(true);
@@ -37,13 +37,12 @@ export function FirebaseAuthProvider({ children }) {
           sendEmailVerification(res.user).then(() => {
             if (!res?.user?.emailVerified) {
               toast.success("Please Verify your Email");
-              window.location.reload();
               signout();
             }
           });
         } else {
           toast.error("Registration failed");
-          
+
         }
       })
         .catch((err) => {
@@ -66,6 +65,7 @@ export function FirebaseAuthProvider({ children }) {
   // Signout function
   function signout() {
     setCurrentUser();
+    localStorage.removeItem("token");
     return signOut(auth);
   }
 
@@ -103,6 +103,8 @@ export function FirebaseAuthProvider({ children }) {
     loading2,
     setLoading2,
     changePassword,
+    user,
+    setUser
   };
 
   return (

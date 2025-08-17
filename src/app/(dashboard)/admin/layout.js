@@ -1,7 +1,9 @@
 "use client"
 import { useAuth } from "@/helpers/context/authContext"
+import { useFetch } from "@/helpers/utils/queries"
 import Link from "next/link"
 import React, { useEffect, useState } from "react"
+import toast from "react-hot-toast"
 import { FaGlobe, FaWallet } from "react-icons/fa"
 import {
   FiHome,
@@ -315,14 +317,10 @@ export default function DashboardLayout({ children }) {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
   const [notifications, setNotifications] = useState(3)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const { currentUser, signout } =useAuth();
-
-  useEffect(()=>{
-   if(currentUser?.role !== "admin"){
-    window.location.href="/";
-    toast.success("Please login as a admin");
-   }
-  },[])
+  const { currentUser, signout,user,setUser } =useAuth();
+  console.log("currentUser",user);
+  const { data, isLoading, error } = useFetch("profile", "/user");
+  console.log("fetchData",data);
   return (
     <div className="flex h-screen bg-gray-50 text-gray-900">
       <AppSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
