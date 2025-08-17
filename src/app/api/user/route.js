@@ -1,127 +1,282 @@
+// import { PrismaClient } from "@/generated/prisma";
+// import jwt from "jsonwebtoken";
+
+// const prisma = new PrismaClient();
+// const secret = "mySecretKey";                          // গোপন key (env এ রাখবে)
+
+// export async function GET(request) {
+
+//     try {
+//       const { searchParams } = new URL(request.url);
+//       const email = searchParams.get("email");
+//       const role = searchParams.get("role");
+
+//       console.log(searchParams?.get("email"));
+//       if(role){
+//         const roleUser = await prisma.user.findMany({
+//           where: { role:role },
+//         });
+//         return new Response(JSON.stringify(roleUser),{status:200})
+//       }
+//       if (email) {
+//         const user = await prisma.user.findUnique({
+//           where: { email:email },
+//         });
+  
+//         if (!user) {
+//           return new Response(
+//             JSON.stringify({ error: "User not found" }),
+//             { status: 404 }
+//           );
+//         }
+  
+//         return new Response(JSON.stringify(user), { status: 200 });
+//       } else {
+//         const users = await prisma.user.findMany();
+//         return new Response(JSON.stringify(users), { status: 200 });
+//       }
+//     } catch (error) {
+//       return new Response(
+//         JSON.stringify({ error: error.message }),
+//         { status: 500 }
+//       );
+//     }
+//   }
+  
+// export async function POST(request) {
+//   // Create new user
+//   console.log("Come to post function");
+//   try {
+//     const data = await request.json();
+
+//     const { email, password, address, phone_number, image, role,name } = data;
+//     const newUser = await prisma.user.create({
+//       data: {
+//         email,
+//         password,
+//         address,
+//         phone_number,
+//         image,
+//         role,
+//         name
+//       },
+//     });
+
+   
+    
+//     return new Response(JSON.stringify(newUser), { status: 201 });
+//   } catch (error) {
+//     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+//   }
+// }
+
+// export async function PUT(request) {
+//   // Update user by id
+//   try {
+//     const data = await request.json();
+//     const { id, email, password, address, phone_number, image, role,name } = data;
+
+//     if (!id) {
+//       return new Response(JSON.stringify({ error: 'User id is required for update' }), { status: 400 });
+//     }
+
+//     const updatedUser = await prisma.user.update({
+//       where: { id: parseInt(id) },
+//       data: {
+//         email,
+//         address,
+//         phone_number,
+//         image,
+//         role,
+//         name
+//       },
+//     });
+
+//     return new Response(JSON.stringify(updatedUser), { status: 200 });
+//   } catch (error) {
+//     if (error.code === 'P2025') {
+//       return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
+//     }
+//     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+//   }
+// }
+
+// export async function DELETE(request) {
+//   // Delete user by id from query param or body
+//   try {
+//     const url = new URL(request.url);
+//     let id = url.searchParams.get('id');
+
+//     if (!id) {
+//       // try from body
+//       const body = await request.json();
+//       id = body.id;
+//     }
+
+//     if (!id) {
+//       return new Response(JSON.stringify({ error: 'User id is required for delete' }), { status: 400 });
+//     }
+
+//     const deletedUser = await prisma.user.delete({
+//       where: { id: parseInt(id) },
+//     });
+
+//     return new Response(JSON.stringify({ message: 'User deleted', user: deletedUser }), { status: 200 });
+//   } catch (error) {
+//     if (error.code === 'P2025') {
+//       return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
+//     }
+//     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+//   }
+// }
+
+
+
+// export const createToken=({payload})=>{
+//   const payload = { id: 123, email: "user@example.com" }; // যেই ডাটা রাখতে চাও
+//   const token = jwt.sign(payload, secret, { expiresIn: "1h" });
+//   return token
+// }
+
+// export const tokenVerify=()=>{
+//   const decoded = jwt.verify(token, secret);
+
+
+// }
+
+
 import { PrismaClient } from "@/generated/prisma";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
+const secret = process.env.JWT_SECRET || "mySecretKey"; // production এ env ব্যবহার করবে
 
-export async function GET(request) {
+// -------------------- JWT ফাংশন --------------------
+export const createToken = (payload) => {
+  // payload: { id, email, role }
+  return jwt.sign(payload, secret);
+};
 
-    try {
-      const { searchParams } = new URL(request.url);
-      const email = searchParams.get("email");
-      const role = searchParams.get("role");
-
-      console.log(searchParams?.get("email"));
-      if(role){
-        const roleUser = await prisma.user.findMany({
-          where: { role:role },
-        });
-        return new Response(JSON.stringify(roleUser),{status:200})
-      }
-      if (email) {
-        const user = await prisma.user.findUnique({
-          where: { email:email },
-        });
-  
-        if (!user) {
-          return new Response(
-            JSON.stringify({ error: "User not found" }),
-            { status: 404 }
-          );
-        }
-  
-        return new Response(JSON.stringify(user), { status: 200 });
-      } else {
-        const users = await prisma.user.findMany();
-        return new Response(JSON.stringify(users), { status: 200 });
-      }
-    } catch (error) {
-      return new Response(
-        JSON.stringify({ error: error.message }),
-        { status: 500 }
-      );
-    }
+export const verifyToken = (token) => {
+  try {
+    return jwt.verify(token, secret);
+  } catch (err) {
+    throw new Error("Invalid or expired token");
   }
-  
+};
+
+// -------------------- API Methods --------------------
+export async function GET(request) {
+  try {
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "No token provided" }), { status: 401 });
+    }
+
+    // Format: "Bearer <token>" → শুধু token অংশ নাও
+    const token = authHeader.split(" ")[1];
+    const payload=verifyToken(token);
+    const user=await prisma.user.findUnique({where:parseInt(payload?.email)});
+    if(user){
+      return new Response(JSON.stringify({data:user,success:true,msg:"Get User Successfully"},{status:200}))
+    }
+
+    const users = await prisma.user.findMany();
+    return new Response(JSON.stringify(users), { status: 200 });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+    });
+  }
+}
+
 export async function POST(request) {
-  // Create new user
-  console.log("Come to post function");
   try {
     const data = await request.json();
+    const { email, password, address, phone_number, image, role, name } = data;
+    const token = createToken({email:email,role:role});
+    // আগেই user check করা (Firebase email verify হলে)
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return new Response(
+        JSON.stringify({ success:true,msg: "User already exists" ,token:token},{status:200})
+      );
+    }
 
-    const { email, password, address, phone_number, image, role,name } = data;
     const newUser = await prisma.user.create({
-      data: {
-        email,
-        password,
-        address,
-        phone_number,
-        image,
-        role,
-        name
-      },
+      data: { email, password, address, phone_number, image, role, name },
     });
 
-    return new Response(JSON.stringify(newUser), { status: 201 });
+    // token create
+  
+
+    return new Response(JSON.stringify({ user: newUser, token,success:true }), { status: 201 });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: error.message ,success:false}), { status: 500 });
   }
 }
 
 export async function PUT(request) {
-  // Update user by id
   try {
     const data = await request.json();
-    const { id, email, password, address, phone_number, image, role,name } = data;
+    const { id, email, password, address, phone_number, image, role, name } = data;
 
     if (!id) {
-      return new Response(JSON.stringify({ error: 'User id is required for update' }), { status: 400 });
+      return new Response(JSON.stringify({ error: "User id is required" }), {
+        status: 400,
+      });
     }
 
     const updatedUser = await prisma.user.update({
       where: { id: parseInt(id) },
-      data: {
-        email,
-        password,
-        address,
-        phone_number,
-        image,
-        role,
-        name
-      },
+      data: { email, password, address, phone_number, image, role, name },
     });
 
     return new Response(JSON.stringify(updatedUser), { status: 200 });
   } catch (error) {
-    if (error.code === 'P2025') {
-      return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
+    if (error.code === "P2025") {
+      return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
     }
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
 
 export async function DELETE(request) {
-  // Delete user by id from query param or body
   try {
-    const url = new URL(request.url);
-    let id = url.searchParams.get('id');
+    const authHeader = request.headers.get("authorization");
 
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "No token provided" }), { status: 401 });
+    }
+
+    // Format: "Bearer <token>" → শুধু token অংশ নাও
+    const token = authHeader.split(" ")[1];
+    const payload=verifyToken(token);
+    if(payload?.role!=="admin"){
+    return new Response(JSON.stringify({success:false,msg:"Only admin can delete user"}),{status:400})
+    }
+    const url = new URL(request.url);
+    let id = url.searchParams.get("id");
+    
     if (!id) {
-      // try from body
       const body = await request.json();
       id = body.id;
     }
 
     if (!id) {
-      return new Response(JSON.stringify({ error: 'User id is required for delete' }), { status: 400 });
+      return new Response(JSON.stringify({ error: "User id is required" }), {
+        status: 400,
+      });
     }
 
     const deletedUser = await prisma.user.delete({
       where: { id: parseInt(id) },
     });
 
-    return new Response(JSON.stringify({ message: 'User deleted', user: deletedUser }), { status: 200 });
+    return new Response(JSON.stringify({ message: "User deleted", user: deletedUser }), { status: 200 });
   } catch (error) {
-    if (error.code === 'P2025') {
-      return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
+    if (error.code === "P2025") {
+      return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
     }
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }

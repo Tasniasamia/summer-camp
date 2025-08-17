@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   getAuth,
@@ -9,7 +9,8 @@ import {
   sendPasswordResetEmail,
   updateProfile,
   sendEmailVerification,
-  deleteUser
+  deleteUser,
+  updatePassword,
 } from "firebase/auth";
 import app from "../../../firebase";
 import { message } from "antd";
@@ -29,20 +30,24 @@ export function FirebaseAuthProvider({ children }) {
   // Signup function
   function signup(email, password) {
     setLoading2(true);
-    createUserWithEmailAndPassword(auth, email, password).then((res)=>{
-      console.log("res,user",res?.user);
-      if(res?.user){
-        message.success("Registration Successfull");
-        sendEmailVerification(res.user).then(()=>{
-          if(!res?.user?.emailVerified){
-                toast.success("Please Verify your Email");
-              
+    createUserWithEmailAndPassword(auth, email, password)
+    .then((res) => {
+        console.log("res,user", res?.user);
+        if (res?.user) {
+          sendEmailVerification(res.user).then(() => {
+            if (!res?.user?.emailVerified) {
+              toast.success("Please Verify your Email");
+              window.location.reload();
             }
-             })
-
-      }
-    })
-
+          });
+        } else {
+          toast.error("Registration failed");
+        }
+      })
+        .catch((err) => {
+        toast.error(err.message);
+        setLoading2(false);
+      });
   }
 
   // Signin function
@@ -55,23 +60,24 @@ export function FirebaseAuthProvider({ children }) {
     }
     return res;
   }
-  
-
 
   // Signout function
   function signout() {
     signOut(auth);
     setCurrentUser("");
-     
   }
 
-  // Reset password
+  // // Reset password
   function resetPassword(email) {
     return sendPasswordResetEmail(auth, email);
   }
+  function changePassword(newPassword) {
+    return updatePassword(auth.currentUser, newPassword);
+  }
+
   //profile Update
-  function profileUpdate(obj){
-    return updateProfile(auth.currentUser,obj);
+  function profileUpdate(obj) {
+    return updateProfile(auth.currentUser, obj);
   }
   // Track user state with onAuthStateChanged listener
   useEffect(() => {
@@ -84,13 +90,15 @@ export function FirebaseAuthProvider({ children }) {
 
   const value = {
     currentUser,
+    setCurrentUser,
     signup,
     signin,
     signout,
     resetPassword,
     profileUpdate,
     loading2,
-    setLoading2
+    setLoading2,
+    changePassword,
   };
 
   return (

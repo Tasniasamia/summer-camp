@@ -36,14 +36,15 @@ export default function FormsPage() {
   };
 
   // Password form submission
+  // Password form submission
   const onPasswordFinish = async (values) => {
     setPasswordLoading(true);
     try {
-      console.log("Password form values:", values);
-      message.success("Password changed successfully!");
-      passwordForm.resetFields();
+        await resetPassword(values?.email);
+        toast.success("Password changed Successfully");
+
     } catch (error) {
-      message.error("Failed to change password");
+      toast.error("Failed to change password");
     } finally {
       setPasswordLoading(false);
     }
@@ -175,88 +176,23 @@ export default function FormsPage() {
     <Card title="Change Password" className="w-full">
       <Form form={passwordForm} layout="vertical" onFinish={onPasswordFinish}>
         <Row gutter={16}>
-          <Col xs={24} md={12}>
-            <Form.Item
-              label="Current Password"
-              name="oldPassword"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter your current password!",
-                },
-                { min: 6, message: "Password must be at least 6 characters!" },
-              ]}
-            >
-              <Input.Password
-                prefix={<FaLock className="w-4 h-4" />}
-                placeholder="Enter current password"
-                size="large"
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="New Password"
-              name="newPassword"
-              rules={[
-                { required: true, message: "Please enter your new password!" },
-                { min: 8, message: "Password must be at least 8 characters!" },
-                {
-                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                  message:
-                    "Password must contain at least one uppercase letter, one lowercase letter, and one number!",
-                },
-              ]}
-            >
-              <Input.Password
-                prefix={<FaLock className="w-4 h-4" />}
-                placeholder="Enter new password"
-                size="large"
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Confirm New Password"
-              name="confirmPassword"
-              dependencies={["newPassword"]}
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your new password!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("newPassword") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error("The two passwords do not match!")
-                    );
-                  },
-                }),
-              ]}
-            >
-              <Input.Password
-                prefix={<FaLock className="w-4 h-4" />}
-                placeholder="Confirm new password"
-                size="large"
-              />
-            </Form.Item>
+          <Col xs={24} md={24}>
+          <Form.Item
+                  label="Email Address"
+                  name="email"
+                  rules={[
+                    { required: true, message: "Please enter your email!" },
+                    { type: "email", message: "Please enter a valid email!" },
+                  ]}
+                >
+                  <Input
+                    prefix={<FaEnvelope className="w-4 h-4" />}
+                    placeholder="Enter your email"
+                    size="large"
+                  />
+                </Form.Item>
           </Col>
 
-          <Col xs={24} md={12}>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-orange-800 mb-2">
-                Password Requirements:
-              </h4>
-              <ul className="text-sm text-orange-700 space-y-1">
-                <li>• At least 8 characters long</li>
-                <li>• Contains uppercase letter (A-Z)</li>
-                <li>• Contains lowercase letter (a-z)</li>
-                <li>• Contains at least one number (0-9)</li>
-                <li>• Different from current password</li>
-              </ul>
-            </div>
-          </Col>
         </Row>
 
         <Form.Item className="mb-0 pt-6">
@@ -267,7 +203,7 @@ export default function FormsPage() {
               className="w-full px-4 text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base shadow-lg"
             >
               {" "}
-              Change Password
+              Save
             </button>
             <button
               type="primary"
@@ -284,7 +220,6 @@ export default function FormsPage() {
       </Form>
     </Card>
   );
-
   const tabItems = [
     {
       key: "1",

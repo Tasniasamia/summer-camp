@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import {
   Form,
@@ -29,20 +28,19 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-  const { currentUser, signup, signin, signout, resetPassword, profileUpdate } =
-    useAuth();
+  const { currentUser,setCurrentUser, signup, signin, signout,loading2 } =useAuth();
   console.log("loading", loading);
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
       if (!isLogin) {
         await signup(values.email, values.password);
+        await signout();
    
       } else {
         await signin(values.email, values.password)
         const loginRes = await signin(values.email, values.password);
-
-        // এখানে আসবে শুধু তখনই যখন email verified হবে
+        console.log("login res",loginRes);
         const dbRes = await fetch("/api/user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -56,33 +54,23 @@ export default function AuthPage() {
         const dbData = await dbRes.json();
         console.log("DB response", dbData);
       
-        if (dbRes.ok) {
-          setIsLogin(true);
-          toast.success("User Created Successfully");
+        if (dbData.success) {
+          if(!currentUser){
+            setIsLogin(true);
+             toast.success(dbData?.msg || 'User Created Successfully');
+          }
+          else{
+            toast.error("Already authenticate");
+          }
         } else {
           toast.error("No Create User Into Database");
         }
-        // if (res.ok) {
-        //   setIsLogin(true);
-        //   toast.success("User Created Successfully");
-        // } else {
-        //   toast.error("No Create User Into Database");
-        // }
-        // Signin part
-        // const res = await fetch(`/api/user?email=${values?.email}`);
-        // const data=await res.json();
-        // console.log("user data",data);
-        // if(data?.id){
-        //   await signin(values.email, values.password);
-        //   toast.success("Signin Successfully");
-        // }
-       
       }
     } catch (error) {
       console.error(error);
       toast.error("Authentication Failed");
     } finally {
-      setLoading(false); // success বা failure যেটাই হোক loading বন্ধ হবে
+      setLoading(false); 
     }
   };
 
@@ -140,25 +128,7 @@ export default function AuthPage() {
               </Radio.Group>
             </Form.Item>
      
-
-          {/* {!isLogin && (
-            <>
-              <Form.Item
-                name="fullName"
-                rules={[
-                  { required: true, message: "Please enter your full name!" },
-                ]}
-              >
-                <Input
-                  prefix={<FaUser className="text-gray-400" />}
-                  placeholder="Full Name"
-                  className="rounded-lg h-12"
-                />
-              </Form.Item>
-            </>
-          )} */}
-
-          <Form.Item
+           <Form.Item
             name="email"
             rules={[
               { required: true, message: "Please enter your email!" },
@@ -229,7 +199,7 @@ export default function AuthPage() {
 
           <Form.Item className="!mb-6">
             <button className="w-full !text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-lg shadow-lg">
-              {loading ? (
+              {(loading||loading2) ? (
                 <Spin />
               ) : isLogin ? (
                 "🚀 Sign In"

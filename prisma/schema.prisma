@@ -34,7 +34,6 @@ model Class {
   price       Float?
   rate        Float?
   description String?   @db.VarChar(10000)
-
   duration    String?
   time        String?
   days        Json?     // JSON type
@@ -46,9 +45,9 @@ model Class {
   status      String?
   image       String?
  
-  instructorId Int
-  instructor   User     @relation("InstructorToClass", fields: [instructorId], references: [id])
-  
+  instructor User? @relation("InstructorToClass", fields: [instructorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  instructorId Int?
+
   enroll enrollClass[]
 }
 
@@ -65,7 +64,7 @@ model enrollClass {
   classId       Int 
   class         Class         @relation(fields: [classId], references: [id])
   userId        Int 
-  user          User          @relation(fields: [userId], references: [id])
+  user          User          @relation(fields: [userId], references: [id],onDelete: Cascade,onUpdate: Cascade)
   status        paymentStatus @default(pending)
   transactionId String? @unique
 }
