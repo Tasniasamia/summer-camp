@@ -199,7 +199,7 @@ export async function POST(request) {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return new Response(
-        JSON.stringify({ success:true,msg: "User already exists" ,token:token},{status:200})
+        JSON.stringify({user:existingUser, success:true,msg: "User already exists" ,token:token},{status:200})
       );
     }
 

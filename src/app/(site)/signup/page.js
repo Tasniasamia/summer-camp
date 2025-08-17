@@ -3,25 +3,20 @@ import { useState } from "react";
 import {
   Form,
   Input,
-  Button,
   Card,
   Typography,
-  Space,
   Divider,
   Checkbox,
-  message,
   Spin,
   Radio,
 } from "antd";
 import {
-  FaUser,
   FaLock,
   FaEnvelope,
-  FaPhone,
-  FaCalendarAlt,
 } from "react-icons/fa";
 import { useAuth } from "@/helpers/context/authContext";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 const { Title, Text } = Typography;
 
 export default function AuthPage() {
@@ -29,15 +24,14 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const { currentUser,setCurrentUser, signup, signin, signout,loading2 } =useAuth();
+  const {push}=useRouter();
   console.log("loading", loading);
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
       if (!isLogin) {
         await signup(values.email, values.password);
-        await signout();
-   
-      } else {
+        } else {
         await signin(values.email, values.password)
         const loginRes = await signin(values.email, values.password);
         console.log("login res",loginRes);
@@ -50,7 +44,6 @@ export default function AuthPage() {
             name: values?.fullName
           }),
         });
-      
         const dbData = await dbRes.json();
         console.log("DB response", dbData);
       
@@ -58,11 +51,29 @@ export default function AuthPage() {
           if(!currentUser){
             setIsLogin(true);
              toast.success(dbData?.msg || 'User Created Successfully');
-          }
+             toast.success("Loggedin Successfully");
+             switch (dbData?.user?.role) {
+                case "instructor":
+                push("/trainer");
+                setCurrentUser(dbData?.user);
+                localStorage.setItem('token',dbData?.token);
+                break;
+               case "admin":
+                push("/admin");
+                setCurrentUser(dbData?.user);
+                localStorage.setItem('token',dbData?.token);
+                break;
+                default:
+                push("/user");
+                setCurrentUser(dbData?.user);
+                localStorage.setItem('token',dbData?.token);
+                break;
+            } }
           else{
             toast.error("Already authenticate");
           }
-        } else {
+        }
+         else {
           toast.error("No Create User Into Database");
         }
       }

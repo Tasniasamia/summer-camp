@@ -1,7 +1,7 @@
 "use client"
-
+import { useAuth } from "@/helpers/context/authContext"
 import Link from "next/link"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { FaGlobe, FaWallet } from "react-icons/fa"
 import {
   FiHome,
@@ -315,7 +315,14 @@ export default function DashboardLayout({ children }) {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
   const [notifications, setNotifications] = useState(3)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const { currentUser, signout } =useAuth();
 
+  useEffect(()=>{
+   if(currentUser?.role !== "admin"){
+    window.location.href="/";
+    toast.success("Please login as a admin");
+   }
+  },[])
   return (
     <div className="flex h-screen bg-gray-50 text-gray-900">
       <AppSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />

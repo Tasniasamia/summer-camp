@@ -100,7 +100,7 @@ export default function Header() {
           <div className="flex gap-4 items-center">
           <div className="flex items-center ">
             {
-              currentUser? (  <Dropdown
+              currentUser?.email ? (  <Dropdown
                 menu={{
                     items,
                 }}

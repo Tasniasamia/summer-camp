@@ -11,6 +11,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { FaBorderNone } from "react-icons/fa6";
 import UserDashboardSkeleton from "@/components/common/skeleton/userDashboardSkeleton";
 import Banner from "@/components/common/banner";
+import { useAuth } from "@/helpers/context/authContext";
+import toast from "react-hot-toast";
 
 const UserDashboardLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -21,6 +23,14 @@ const UserDashboardLayout = ({ children }) => {
   const onClose = () => setOpen(false);
   const pathname = usePathname();
   const [pathName, setPathName] = useState("");
+  const { currentUser, signout } =useAuth();
+
+  useEffect(()=>{
+   if(currentUser?.role !== "instructor"){
+    window.location.href="/";
+    toast.success("Please login as a instructor");
+   }
+  },[])
   const menuItems = [
     { id: 1, name: "Dashboard", href: "/user", icon: <MdOutlineDashboard /> },
     {

@@ -11,16 +11,27 @@ import { usePathname, useRouter } from "next/navigation";
 import { FaBorderNone } from "react-icons/fa6";
 import UserDashboardSkeleton from "@/components/common/skeleton/userDashboardSkeleton";
 import Banner from "@/components/common/banner";
+import { useAuth } from "@/helpers/context/authContext";
+import toast from "react-hot-toast";
 
 const UserDashboardLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+  const {push} = useRouter();
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const showDrawer = () => setOpen(true);
   const onClose = () => setOpen(false);
   const pathname = usePathname();
   const [pathName, setPathName] = useState("");
+  const { currentUser, signout } =useAuth();
+
+  useEffect(()=>{
+   if(currentUser?.role !== "student"){
+    window.location.href="/";
+    toast.success("Please login as a student");
+   }
+  },[])
+
   const menuItems = [
     { id: 1, name: "Dashboard", href: "/user", icon: <MdOutlineDashboard /> },
     {
@@ -85,8 +96,7 @@ const UserDashboardLayout = ({ children }) => {
                   onClick={toggleSidebar}
                 ></div>
               )}
-
-              <div className="h-fit w-full overflow-hidden rounded-[20px] border border-gray-200 p-2 shadow-md sm:p-6 lg:w-3/4">
+             <div className="h-fit w-full overflow-hidden rounded-[20px] border border-gray-200 p-2 shadow-md sm:p-6 lg:w-3/4">
                 {children}
               </div>
             </div>
@@ -101,7 +111,7 @@ const UserDashboardLayout = ({ children }) => {
 const SidebarContent = ({ menuItems, setPathName }) => {
   const pathname = usePathname();
   const router = useRouter();
-
+ 
   return (
     <div className="h-fit">
       <div className="h-fit bg-[#EDEDED] font-roboto">

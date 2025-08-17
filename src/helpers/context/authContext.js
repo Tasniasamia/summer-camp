@@ -26,7 +26,7 @@ export function FirebaseAuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loading2, setLoading2] = useState(false);
-
+  console.log("currentUser",currentUser);
   // Signup function
   function signup(email, password) {
     setLoading2(true);
@@ -38,10 +38,12 @@ export function FirebaseAuthProvider({ children }) {
             if (!res?.user?.emailVerified) {
               toast.success("Please Verify your Email");
               window.location.reload();
+              signout();
             }
           });
         } else {
           toast.error("Registration failed");
+          
         }
       })
         .catch((err) => {
@@ -53,18 +55,18 @@ export function FirebaseAuthProvider({ children }) {
   // Signin function
   async function signin(email, password) {
     const res = await signInWithEmailAndPassword(auth, email, password);
-    if (!res.user.emailVerified) {
-      await signOut(auth);
-      toast.error("Please verify your email before login.");
-      throw new Error("Email not verified");
-    }
+    // if (!res.user.emailVerified) {
+    //   await signOut(auth);
+    //   toast.error("Please verify your email before login.");
+    //   throw new Error("Email not verified");
+    // }
     return res;
   }
 
   // Signout function
   function signout() {
-    signOut(auth);
-    setCurrentUser("");
+    setCurrentUser();
+    return signOut(auth);
   }
 
   // // Reset password
@@ -85,8 +87,10 @@ export function FirebaseAuthProvider({ children }) {
       setCurrentUser(user);
       setLoading(false);
     });
-    return unsubscribe; // Cleanup subscription on unmount
+    return  unsubscribe; // Cleanup subscription on unmount
   }, []);
+
+
 
   const value = {
     currentUser,
