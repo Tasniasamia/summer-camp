@@ -17,7 +17,7 @@ import { FaUser, FaEnvelope, FaPhone, FaLock, FaCamera } from "react-icons/fa";
 import ImageInput from "@/components/common/form/image";
 import { useAuth } from "@/helpers/context/authContext";
 import toast from "react-hot-toast";
-import { useFetch } from "@/helpers/utils/queries";
+import { useFetch, useMutationAction } from "@/helpers/utils/queries";
 
 const { TextArea } = Input;
 
@@ -25,24 +25,48 @@ export default function FormsPage() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
-  const { currentUser, signup, signin, signout, resetPassword, profileUpdate ,changePassword}=useAuth();
+  const {
+    currentUser,
+    signup,
+    signin,
+    signout,
+    resetPassword,
+    profileUpdate,
+    changePassword,
+  } = useAuth();
   const { data, isLoading, error } = useFetch("profile", "/user");
-  console.log("fetchData",data);
+  console.log("fetchData", data);
   useEffect(() => {
     if (data?.data) {
       form.setFieldsValue({
         name: data?.data?.name || "",
         email: data?.data?.email || "",
-        phone: data?.data?.phone || "",
+        phone: data?.data?.phone_number || "",
         address: data?.data?.address || "",
-        image: data?.data?.image ? [data?.data?.image] : [],
+        id: data?.data?.id,
+        image: data?.data?.image
+          ? [
+              {
+                uid: "-1",
+                name: "image.png",
+                status: "done",
+                url: data?.data?.image,
+              },
+            ]
+          : [],
       });
     }
   }, [data, form]);
+  
+  
+  
+  const updateSetting = useMutationAction("update", "/user", "settings");
+
   // Profile form submission
   const onProfileFinish = async (values) => {
     console.log("Profile form values:", values);
-
+    const res=await updateSetting.mutateAsync(values);
+    console.log("after update",res);
     setLoading(true);
     try {
       toast.success("Profile updated successfully!");
@@ -52,14 +76,13 @@ export default function FormsPage() {
       setLoading(false);
     }
   };
-  
+
   // Password form submission
   const onPasswordFinish = async (values) => {
     setPasswordLoading(true);
     try {
-        await resetPassword(values?.email);
-        toast.success("Password changed Successfully");
-
+      await resetPassword(values?.email);
+      toast.success("Password changed Successfully");
     } catch (error) {
       toast.error("Failed to change password");
     } finally {
@@ -69,23 +92,24 @@ export default function FormsPage() {
 
   const ProfileForm = () => (
     <Card title="Profile Information" className="w-full">
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onProfileFinish}
-      
-      >
+      <Form form={form} layout="vertical" onFinish={onProfileFinish}>
         <Row gutter={24}>
           <Col xs={24} md={8}>
-            <Form.Item
-              label="Profile Picture"
-              name="image"
-              // rules={[{ required: true, message: "Please upload an image!" }]}
-            >
-              <ImageInput max={1} name="image" />
-            </Form.Item>
-          </Col>
+          <Form.Item name="image" label="Profile Picture">
+  <ImageInput
+    max={1}
+    name="image"
+    onUploadSuccess={(url) =>
+      form.setFieldValue("image", url)
+    }
+  />
+</Form.Item>
 
+
+          </Col>
+          <Form.Item name="id" hidden>
+            <Input autoComplete="off" />
+          </Form.Item>
           <Col xs={24} md={16}>
             <Row gutter={16}>
               <Col xs={24} md={12}>
@@ -125,7 +149,7 @@ export default function FormsPage() {
 
             <Form.Item
               label="Phone Number"
-              name="phone"
+              name="phone_number"
               rules={[
                 { required: true, message: "Please enter your phone number!" },
                 {
@@ -172,7 +196,6 @@ export default function FormsPage() {
               type="primary"
               htmlType="submit"
               onClick={() => form.resetFields()}
-
               className="w-full px-4  cursor-pointer h-12 rounded-lg border border-gray-200 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base shadow-lg"
             >
               {" "}
@@ -189,22 +212,21 @@ export default function FormsPage() {
       <Form form={form} layout="vertical" onFinish={onPasswordFinish}>
         <Row gutter={16}>
           <Col xs={24} md={24}>
-          <Form.Item
-                  label="Email Address"
-                  name="email"
-                  rules={[
-                    { required: true, message: "Please enter your email!" },
-                    { type: "email", message: "Please enter a valid email!" },
-                  ]}
-                >
-                  <Input
-                    prefix={<FaEnvelope className="w-4 h-4" />}
-                    placeholder="Enter your email"
-                    size="large"
-                  />
-                </Form.Item>
+            <Form.Item
+              label="Email Address"
+              name="email"
+              rules={[
+                { required: true, message: "Please enter your email!" },
+                { type: "email", message: "Please enter a valid email!" },
+              ]}
+            >
+              <Input
+                prefix={<FaEnvelope className="w-4 h-4" />}
+                placeholder="Enter your email"
+                size="large"
+              />
+            </Form.Item>
           </Col>
-
         </Row>
 
         <Form.Item className="mb-0 pt-6">
@@ -221,13 +243,12 @@ export default function FormsPage() {
               type="primary"
               htmlType="submit"
               onClick={() => form.resetFields()}
-
               className="w-full px-4  cursor-pointer h-12 rounded-lg border border-gray-200 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base shadow-lg"
             >
               {" "}
               Reset
             </button>
-            </Space>
+          </Space>
         </Form.Item>
       </Form>
     </Card>
@@ -236,12 +257,20 @@ export default function FormsPage() {
   const tabItems = [
     {
       key: "1",
-      label:(<span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500 font-bold">Profile Information</span>),
+      label: (
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500 font-bold">
+          Profile Information
+        </span>
+      ),
       children: <ProfileForm />,
     },
     {
       key: "2",
-      label:(<span className="text-transparent font-bold bg-clip-text bg-gradient-to-r  from-orange-500 to-yellow-500">Change Password</span>),
+      label: (
+        <span className="text-transparent font-bold bg-clip-text bg-gradient-to-r  from-orange-500 to-yellow-500">
+          Change Password
+        </span>
+      ),
       children: <PasswordForm />,
     },
   ];
