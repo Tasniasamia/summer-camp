@@ -13,6 +13,7 @@ import UserDashboardSkeleton from "@/components/common/skeleton/userDashboardSke
 import Banner from "@/components/common/banner";
 import { useAuth } from "@/helpers/context/authContext";
 import toast from "react-hot-toast";
+import { useFetch } from "@/helpers/utils/queries";
 
 const UserDashboardLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -23,14 +24,27 @@ const UserDashboardLayout = ({ children }) => {
   const onClose = () => setOpen(false);
   const pathname = usePathname();
   const [pathName, setPathName] = useState("");
-  const { currentUser, signout } =useAuth();
-
-  useEffect(()=>{
-   if(currentUser?.role !== "student"){
-    window.location.href="/";
-    toast.success("Please login as a student");
-   }
-  },[])
+  const { data, isLoading, error } = useFetch("profile", "/user");
+  const {user,setUser, currentUser, signout }=useAuth();
+  console.log("fetch data",data?.data);
+  useEffect(() => {
+    if (!data?.data) {
+      const token=localStorage.getItem('token');
+      if(token){
+        return;
+      }
+      else{
+        window.location.href="/";
+      }
+    }; // ডাটা না এলে কিছু করব না  
+    if (data?.data?.role !== "student") {
+      toast.error("Please login as a student");
+      window.location.href = "/";
+    } else {
+      setUser(data?.data);
+    }
+  }, [data]);
+  
 
   const menuItems = [
     { id: 1, name: "Dashboard", href: "/user", icon: <MdOutlineDashboard /> },
@@ -55,7 +69,6 @@ const UserDashboardLayout = ({ children }) => {
       );
     }
   }, [pathname]);
-  const user = true;
   return (
     <>
       {!user ? (

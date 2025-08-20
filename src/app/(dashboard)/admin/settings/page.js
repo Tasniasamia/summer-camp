@@ -1,14 +1,10 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import {
   Form,
   Input,
-  Button,
-  Upload,
   Card,
   Tabs,
-  message,
   Row,
   Col,
   Space,
@@ -18,7 +14,7 @@ import ImageInput from "@/components/common/form/image";
 import { useAuth } from "@/helpers/context/authContext";
 import toast from "react-hot-toast";
 import { useFetch, useMutationAction } from "@/helpers/utils/queries";
-
+import UserDashboardSkeleton from "@/components/skeleton/dashboardSkeleton";
 const { TextArea } = Input;
 
 export default function FormsPage() {
@@ -50,23 +46,21 @@ export default function FormsPage() {
                 uid: "-1",
                 name: "image.png",
                 status: "done",
-                url: data?.data?.image,
+                url: data.data.image.url,
+                public_id: data.data.image.public_id,
               },
             ]
           : [],
       });
     }
   }, [data, form]);
-  
-  
-  
   const updateSetting = useMutationAction("update", "/user", "settings");
 
   // Profile form submission
   const onProfileFinish = async (values) => {
     console.log("Profile form values:", values);
-    const res=await updateSetting.mutateAsync(values);
-    console.log("after update",res);
+    const res = await updateSetting.mutateAsync(values);
+    console.log("after update", res);
     setLoading(true);
     try {
       toast.success("Profile updated successfully!");
@@ -82,7 +76,7 @@ export default function FormsPage() {
     setPasswordLoading(true);
     try {
       await resetPassword(values?.email);
-      toast.success("Password changed Successfully");
+      toast.success("Check email , reset your password");
     } catch (error) {
       toast.error("Failed to change password");
     } finally {
@@ -95,30 +89,28 @@ export default function FormsPage() {
       <Form form={form} layout="vertical" onFinish={onProfileFinish}>
         <Row gutter={24}>
           <Col xs={24} md={8}>
-          <Form.Item name="image" label="Profile Picture">
-  <ImageInput
-    max={1}
-    name="image"
-    initialValue={
-      data?.data?.image
-        ? [
-          {
-            uid: "-1",
-            name: "image.png",
-            status: "done",
-            url: data.data.image.url,    
-            public_id: data.data.image.public_id,
-          },
-          ]
-        : []
-    }
-    onUploadSuccess={(imageObj) => form.setFieldValue("image", imageObj)}
-  />
-</Form.Item>
-
-
-
-
+            <Form.Item name="image" label="Profile Picture">
+              <ImageInput
+                max={1}
+                name="image"
+                initialValue={
+                  data?.data?.image
+                    ? [
+                        {
+                          uid: "-1",
+                          name: "image.png",
+                          status: "done",
+                          url: data.data.image.url,
+                          public_id: data.data.image.public_id,
+                        },
+                      ]
+                    : []
+                }
+                onUploadSuccess={(imageObj) =>
+                  form.setFieldValue("image", imageObj)
+                }
+              />
+            </Form.Item>
           </Col>
           <Form.Item name="id" hidden>
             <Input autoComplete="off" />
@@ -155,7 +147,8 @@ export default function FormsPage() {
                     prefix={<FaEnvelope className="w-4 h-4" />}
                     placeholder="Enter your email"
                     size="large"
-                  />
+                    disabled={true}
+                   />
                 </Form.Item>
               </Col>
             </Row>
@@ -299,14 +292,17 @@ export default function FormsPage() {
             Manage your profile information and security settings
           </p>
         </div>
-
-        <Tabs
-          centered
-          defaultActiveKey="1"
-          items={tabItems}
-          size="large"
-          className="bg-white rounded-lg shadow-sm bg-gradient-to-br from-orange-50 via-yellow-50 to-amber-50 "
-        />
+        {isLoading ? (
+          <UserDashboardSkeleton />
+        ) : (
+          <Tabs
+            centered
+            defaultActiveKey="1"
+            items={tabItems}
+            size="large"
+            className="bg-white rounded-lg shadow-sm bg-gradient-to-br from-orange-50 via-yellow-50 to-amber-50 "
+          />
+        )}
       </div>
     </div>
   );

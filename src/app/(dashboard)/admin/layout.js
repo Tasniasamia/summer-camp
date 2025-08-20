@@ -317,10 +317,29 @@ export default function DashboardLayout({ children }) {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
   const [notifications, setNotifications] = useState(3)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const { currentUser, signout,user,setUser } =useAuth();
-  console.log("currentUser",user);
   const { data, isLoading, error } = useFetch("profile", "/user");
-  console.log("fetchData",data);
+  const {user,setUser, currentUser, signout }=useAuth();
+  console.log("fetch data",data?.data);
+  useEffect(() => {
+    if (!data?.data) {
+      const token=localStorage.getItem('token');
+      if(token){
+        return;
+      }
+      else{
+        window.location.href="/";
+      }
+    }; // ডাটা না এলে কিছু করব না
+  
+    if (data?.data?.role !== "admin") {
+      toast.error("Please login as a admin");
+      window.location.href = "/";
+    } else {
+      setUser(data?.data);
+    }
+  }, [data]);
+
+
   return (
     <div className="flex h-screen bg-gray-50 text-gray-900">
       <AppSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
