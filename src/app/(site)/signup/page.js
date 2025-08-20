@@ -128,8 +128,7 @@ export default function AuthPage() {
           size="large"
           className="space-y-4"
         >
-        
-            <Form.Item
+        {isLogin && ( <Form.Item
               name="role"
               rules={[{ required: true, message: "Please select your role!" }]}
             >
@@ -138,7 +137,8 @@ export default function AuthPage() {
               <Radio value="instructor">Instructor</Radio>
               <Radio value="student">Student</Radio>
               </Radio.Group>
-            </Form.Item>
+            </Form.Item>)}
+           
      
            <Form.Item
             name="email"

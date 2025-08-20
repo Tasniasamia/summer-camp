@@ -41,7 +41,7 @@ export default function FormsPage() {
       form.setFieldsValue({
         name: data?.data?.name || "",
         email: data?.data?.email || "",
-        phone: data?.data?.phone_number || "",
+        phone_number: data?.data?.phone_number || "",
         address: data?.data?.address || "",
         id: data?.data?.id,
         image: data?.data?.image
@@ -99,11 +99,24 @@ export default function FormsPage() {
   <ImageInput
     max={1}
     name="image"
-    onUploadSuccess={(url) =>
-      form.setFieldValue("image", url)
+    initialValue={
+      data?.data?.image
+        ? [
+          {
+            uid: "-1",
+            name: "image.png",
+            status: "done",
+            url: data.data.image.url,    
+            public_id: data.data.image.public_id,
+          },
+          ]
+        : []
     }
+    onUploadSuccess={(imageObj) => form.setFieldValue("image", imageObj)}
   />
 </Form.Item>
+
+
 
 
           </Col>

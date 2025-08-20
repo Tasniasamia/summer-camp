@@ -48,7 +48,7 @@ export function FirebaseAuthProvider({ children }) {
         .catch((err) => {
         toast.error(err.message);
         setLoading2(false);
-      });
+      }).finally(()=>{setLoading2(false)})
   }
 
   // Signin function

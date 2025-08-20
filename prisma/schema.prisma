@@ -20,7 +20,7 @@ model User {
   password     String?
   address      String?
   phone_number String?
-  image        String?
+  image        Json?   
   role         UserRole?
   name         String?
 
