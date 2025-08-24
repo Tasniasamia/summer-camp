@@ -1,10 +1,9 @@
 {
-  "hosting": {
-    "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
-  }
+  "hosting": [
+    {
+      "site": "summer-camp-4068a",
+      "source": ".",
+      "frameworksBackend": {}
+    }
+  ]
 }

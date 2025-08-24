@@ -12,10 +12,10 @@ export const POST=async(request)=>{
             data:data
         })
 
-        return new Response(JSON.stringify(result),{status:200})
+        return new Response(JSON.stringify({data:result,success:true}),{status:200})
     }
     catch(err){
-        return new Response(JSON.stringify({ error: err.message }),{status:404})
+        return new Response(JSON.stringify({ error: err.message,msg:err.message ,success:false }),{status:404})
     }
 
 }

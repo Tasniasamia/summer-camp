@@ -7,9 +7,11 @@ import {
   Select,
   TimePicker,
   DatePicker,
+  Switch,
 } from "antd";
 import JoditEditor from 'jodit-react';
 import ImageInput from "@/components/common/form/image";
+import { useFetch, useMutationAction } from "@/helpers/utils/queries";
 
 const { Option } = Select;
 
@@ -31,18 +33,41 @@ const daysOptions = [
   { label: "Sunday", value: "Sun" },
 ];
 
-const ClassForm = () => {
+const ClassForm = ({data}) => {
   const [form] = Form.useForm();
   const editor = useRef(null);
   const [description, setDescription] = useState("");
-  const onFinish = (values) => {
+  const[loading,setLoading]=useState(false);
+  const updateClass=useMutationAction('update',"/class",'updateClass');
+  const createClass=useMutationAction('create',"/class",'createClass');
+  const { data:users, isLoading, error } = useFetch("user", "/getUsers");
+  const instructor=users?.filter((i)=>i?.role==="instructor");
+  console.log('user data',instructor);
+
+  const onFinish =async (values) => {
+    setLoading(true)
     const formattedValues = {
       ...values,
       time: values.time.format("HH:mm"),
       createDate: values.createDate.format("YYYY-MM-DD"),
       description,
     };
-    console.log("Form values:", formattedValues);
+    console.log("formattedValues",formattedValues)
+    const res=await createClass.mutateAsync(formattedValues);
+    console.log("data",res);
+    if(data?.success){
+      setLoading(false)
+      toast.success("Class created successfully");
+    }
+    else{
+      toast.error(data?.msg);
+      setLoading(false);
+    }
+    if(data?.id){
+
+    }
+ 
+    
   };
 
   return (
@@ -61,8 +86,26 @@ const ClassForm = () => {
         name="image"
         rules={[{ required: true, message: 'Please upload an image!' }]}
       >
-        <ImageInput max={1} name="image" />
-      </Form.Item>
+        <ImageInput
+                max={1}
+                name="image"
+                initialValue={
+                  data?.image
+                    ? [
+                        {
+                          uid: "-1",
+                          name: "image.png",
+                          status: "done",
+                          url: data.image.url,
+                          public_id: data.image.public_id,
+                        },
+                      ]
+                    : []
+                }
+                onUploadSuccess={(imageObj) =>
+                  form.setFieldValue("image", imageObj)
+                }
+              />      </Form.Item>
       <Form.Item
         label="Name"
         name="name"
@@ -88,14 +131,26 @@ const ClassForm = () => {
       >
         <InputNumber min={0} max={5}  style={{ width: "100%" }} />
       </Form.Item>
-      <Form.Item
+      {/* <Form.Item
         label="Instructor"
         name="instructor"
         rules={[{ required: true, message: "Please input the instructor name" }]}
       >
         <Input placeholder="Enter instructor name" />
+      </Form.Item> */}
+      <Form.Item
+        label="Instructor"
+        name="instructorId"
+        rules={[{ required: true, message: "Please select an instructor" }]}
+      >
+        <Select
+          placeholder="Select instructor"
+          options={instructor?.map((i)=>{
+            return   { label: i?.name, value: i?.id }
+          })}
+          
+        />
       </Form.Item>
-
       <Form.Item
         label="Rate"
         name="rate"
@@ -173,13 +228,17 @@ const ClassForm = () => {
         <InputNumber min={0} style={{ width: "100%" }} />
       </Form.Item>
 
-     
+      <Form.Item
+        label="Status"
+        name="status"
+       
+      >
+       <Switch defaultChecked={true}/>
+     </Form.Item>
 
-      <Form.Item>
-        <button type="primary" htmlType="submit" className="w-full text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-lg shadow-lg"
->        Save
+        <button type="primary" htmlType="submit" className="!cursor-pointer w-full text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-lg shadow-lg"
+>         {loading?"Loading...": "Save"}
         </button>
-      </Form.Item>
     </Form>
     </div>
 

@@ -9,7 +9,7 @@ const page = ({params}) => {
     return (
         <div>
             <Title title="Update Class"/>
-            <ClassForm/>
+            <ClassForm id={id}/>
         </div>
     );
 };

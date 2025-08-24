@@ -43,7 +43,7 @@ model Class {
   sit         Int?
   enrollment  Int?
   status      String?
-  image       String?
+  image        Json?   
  
   instructor User? @relation("InstructorToClass", fields: [instructorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   instructorId Int?

@@ -319,7 +319,6 @@ export default function DashboardLayout({ children }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const { data, isLoading, error } = useFetch("profile", "/user");
   const {user,setUser, currentUser, signout }=useAuth();
-  console.log("fetch data",data?.data);
   useEffect(() => {
     if (!data?.data) {
       const token=localStorage.getItem('token');
@@ -329,7 +328,7 @@ export default function DashboardLayout({ children }) {
       else{
         window.location.href="/";
       }
-    }; // ডাটা না এলে কিছু করব না
+    }; 
   
     if (data?.data?.role !== "admin") {
       toast.error("Please login as a admin");
