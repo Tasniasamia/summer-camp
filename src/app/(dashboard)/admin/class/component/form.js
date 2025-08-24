@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Form,
   Input,
@@ -12,6 +12,7 @@ import {
 import JoditEditor from 'jodit-react';
 import ImageInput from "@/components/common/form/image";
 import { useFetch, useMutationAction } from "@/helpers/utils/queries";
+import toast from "react-hot-toast";
 
 const { Option } = Select;
 
@@ -43,29 +44,46 @@ const ClassForm = ({data}) => {
   const { data:users, isLoading, error } = useFetch("user", "/getUsers");
   const instructor=users?.filter((i)=>i?.role==="instructor");
   console.log('user data',instructor);
+   useEffect(()=>{
 
+   },[data]);
   const onFinish =async (values) => {
     setLoading(true)
-    const formattedValues = {
-      ...values,
-      time: values.time.format("HH:mm"),
-      createDate: values.createDate.format("YYYY-MM-DD"),
-      description,
-    };
-    console.log("formattedValues",formattedValues)
-    const res=await createClass.mutateAsync(formattedValues);
-    console.log("data",res);
-    if(data?.success){
+    try{
+      const formattedValues = {
+        ...values,
+        time: values?.time,
+        createdAt: values?.createdAt,
+        description,
+        instructor: {
+          connect: { id: values?.instructor }
+        }
+      };
+      console.log("formattedValues",formattedValues)
+      const res=await createClass.mutateAsync(formattedValues);
+      console.log("data",res);
+      if(res?.success){
+        setLoading(false)
+        toast.success("Class created successfully");
+        form.resetFields();
+      }
+      else{
+        toast.error(data?.msg);
+        setLoading(false);
+      }
+      if(data?.id){
+  
+      }
+    }
+    catch(e){
       setLoading(false)
-      toast.success("Class created successfully");
+      toast.error(e.message)
     }
-    else{
-      toast.error(data?.msg);
-      setLoading(false);
-    }
-    if(data?.id){
+    finally{
+      setLoading(false)
 
     }
+    
  
     
   };
@@ -140,7 +158,7 @@ const ClassForm = ({data}) => {
       </Form.Item> */}
       <Form.Item
         label="Instructor"
-        name="instructorId"
+        name="instructor"
         rules={[{ required: true, message: "Please select an instructor" }]}
       >
         <Select
@@ -207,7 +225,7 @@ const ClassForm = ({data}) => {
 
       <Form.Item
         label="Create Date"
-        name="createDate"
+        name="createdAt"
         rules={[{ required: true, message: "Please select create date" }]}
       >
         <DatePicker style={{ width: "100%" }} />
