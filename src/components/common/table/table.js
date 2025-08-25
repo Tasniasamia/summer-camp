@@ -16,6 +16,7 @@ const CommonTable = ({
   loading,
   onPageChange,
   pagination,
+  setSearch
 }) => {
   let cols = noActions
     ? columns
@@ -70,7 +71,7 @@ const CommonTable = ({
       style={{ overflowX: "auto", width: "100%" }}
       className="bg-gradient-to-br from-orange-50 via-yellow-50 to-amber-50 p-6 sm:p-4 shadow-2xl"
     >
-      {isSearch && <SearchInput />}
+      {isSearch && <SearchInput onSearch={setSearch}/>}
       <AntTable
         columns={cols}
         dataSource={pagination ? data?.docs : data}

@@ -42,7 +42,7 @@ model Class {
   category    String?  
   sit         Int?
   enrollment  Int?
-  status      String?
+  status      Boolean   @default(true) 
   image        Json?   
  
   instructor User? @relation("InstructorToClass", fields: [instructorId], references: [id], onDelete: SetNull, onUpdate: Cascade)

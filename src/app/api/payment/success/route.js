@@ -14,7 +14,7 @@ export async function POST(req) {
     if(findClass){
       const updateClass=await prisma.class.update({
         where:{id:parseInt(classId)},
-        data:{sit:findClass?.sit - 1}
+        data:{sit:findClass?.sit - 1,enrollment:findClass?.enrollment+1}
 
       })
     }

@@ -6,8 +6,10 @@ import { fetchData, postData, updateData, deleteData } from "../utils/api";
 // GET query
 export const useFetch = (queryKey, url, params = {}) => {
   return useQuery({
-    queryKey: [queryKey], // user defined key
+    queryKey: [queryKey,params], 
     queryFn: () => fetchData(url, params),
+    keepPreviousData: true, 
+
   });
 };
 

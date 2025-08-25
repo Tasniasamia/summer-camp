@@ -34,7 +34,7 @@ const daysOptions = [
   { label: "Sunday", value: "Sun" },
 ];
 
-const ClassForm = ({data}) => {
+const ClassForm = ({id}) => {
   const [form] = Form.useForm();
   const editor = useRef(null);
   const [description, setDescription] = useState("");
@@ -42,11 +42,13 @@ const ClassForm = ({data}) => {
   const updateClass=useMutationAction('update',"/class",'updateClass');
   const createClass=useMutationAction('create',"/class",'createClass');
   const { data:users, isLoading, error } = useFetch("user", "/getUsers");
+ 
+  const { data:getClass, isLoading:loading2, error:err } = useFetch("user", `/class?id=${id}`);
+  console.log("getClass data",getClass);
+
   const instructor=users?.filter((i)=>i?.role==="instructor");
   console.log('user data',instructor);
-   useEffect(()=>{
 
-   },[data]);
   const onFinish =async (values) => {
     setLoading(true)
     try{
@@ -108,14 +110,14 @@ const ClassForm = ({data}) => {
                 max={1}
                 name="image"
                 initialValue={
-                  data?.image
+                  getClass?.image
                     ? [
                         {
                           uid: "-1",
                           name: "image.png",
                           status: "done",
-                          url: data.image.url,
-                          public_id: data.image.public_id,
+                          url: getClass?.image.url,
+                          public_id: getClass?.image.public_id,
                         },
                       ]
                     : []
@@ -149,13 +151,7 @@ const ClassForm = ({data}) => {
       >
         <InputNumber min={0} max={5}  style={{ width: "100%" }} />
       </Form.Item>
-      {/* <Form.Item
-        label="Instructor"
-        name="instructor"
-        rules={[{ required: true, message: "Please input the instructor name" }]}
-      >
-        <Input placeholder="Enter instructor name" />
-      </Form.Item> */}
+   
       <Form.Item
         label="Instructor"
         name="instructor"
@@ -247,12 +243,14 @@ const ClassForm = ({data}) => {
       </Form.Item>
 
       <Form.Item
-        label="Status"
-        name="status"
-       
-      >
-       <Switch defaultChecked={true}/>
-     </Form.Item>
+  label="Status"
+  name="status"
+  valuePropName="checked"
+
+>
+  <Switch defaultChecked={true} />
+</Form.Item>
+
 
         <button type="primary" htmlType="submit" className="!cursor-pointer w-full text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-lg shadow-lg"
 >         {loading?"Loading...": "Save"}
