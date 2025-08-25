@@ -120,29 +120,46 @@ export const PUT=async(request)=>{
 }
 
 export async function DELETE(request) {
-    try {
-      const url = new URL(request.url);
-      let id = url.searchParams.get('id');
-  
-      if (!id) {
-        const body = await request.json();
-        id = body.id;
-      }
-  
-      if (!id) {
-        return new Response(JSON.stringify({ error: 'User id is required for delete' }), { status: 400 });
-      }
-  
-      const deletedUser = await prisma.class.delete({
-        where: { id: parseInt(id) },
-      });
-  
-      return new Response(JSON.stringify({ message: 'Class deleted SuccessFully', user: deletedUser }), { status: 200 });
-    } catch (error) {
-      if (error.code === 'P2025') {
-        return new Response(JSON.stringify({ error: 'Class not found' }), { status: 404 });
-      }
-      return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  try {
+    const body = await request.json();
+    console.log("body delete", body);
+
+    const id = body?.id;
+    console.log("id body", id);
+
+    if (!id) {
+      return new Response(
+        JSON.stringify({ error: "User id is required for delete" }),
+        { status: 400 }
+      );
     }
+
+    const deletedUser = await prisma.class.delete({
+      where: { id: parseInt(id) },
+    });
+
+    console.log("deleted User", deletedUser);
+
+    return new Response(
+      JSON.stringify({
+        message: "Class deleted Successfully",
+        user: deletedUser,
+      }),
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.error("Delete Error:", error);
+
+    if (error?.code === "P2025") {
+      return new Response(JSON.stringify({ error: "Class not found" }), {
+        status: 404,
+      });
+    }
+
+    return new Response(
+      JSON.stringify({ error: error?.message || "Unknown error" }),
+      { status: 500 }
+    );
   }
-  
+}

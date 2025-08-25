@@ -20,7 +20,7 @@ export const updateData = async (url, payload) => {
 };
 
 // DELETE
-export const deleteData = async (url) => {
-  const { data } = await api.delete(url);
+export const deleteData = async (url,payload) => {
+  const { data } = await api.delete(url,{data:payload});
   return data;
 };

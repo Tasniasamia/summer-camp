@@ -1,7 +1,7 @@
 "use client";
 import CommonTable from "@/components/common/table/table";
 import Title from "@/components/common/title";
-import { useFetch } from "@/helpers/utils/queries";
+import { useFetch, useMutationAction } from "@/helpers/utils/queries";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,7 +11,7 @@ const Page = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
-
+  const deleteClass=useMutationAction('delete',`/class`,'deleteClass');
   const {
     data: getClass,
     isLoading: loadingClasses,
@@ -92,7 +92,10 @@ const Page = () => {
         loading={loadingClasses || loadingUsers}
         onView={(rec) => router.push(`/admin/class/${rec?.name}`)}
         onEdit={(rec) => router.push(`/admin/class/edit/${rec?.name}`)}
-        onDelete={(rec) => console.log("Delete:", rec)}
+        onDelete={async(rec) =>{
+         deleteClass.mutateAsync({id:rec?.id});
+
+        } }
         pagination={true}
         onPageChange={handlePageChange}
         setSearch={setSearch}

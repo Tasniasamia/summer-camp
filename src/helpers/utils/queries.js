@@ -20,7 +20,7 @@ export const useMutationAction = (type, url, queryKey) => {
   const mutationFn = (payload) => {
     if (type === "create") return postData(url, payload);
     if (type === "update") return updateData(url, payload);
-    if (type === "delete") return deleteData(url);
+    if (type === "delete") return deleteData(url,payload);
   };
 
   return useMutation({
