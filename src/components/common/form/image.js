@@ -34,7 +34,7 @@ const ImageInput = ({
         setResonseImage(initialValue[0]);
       }
     }
-  }, []); // ✅ only on mount
+  }, [initialValue[0]?.url]); // ✅ only on mount
 
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {

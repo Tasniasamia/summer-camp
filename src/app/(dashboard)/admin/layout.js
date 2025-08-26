@@ -1,10 +1,10 @@
-"use client"
-import { useAuth } from "@/helpers/context/authContext"
-import { useFetch } from "@/helpers/utils/queries"
-import Link from "next/link"
-import React, { useEffect, useState } from "react"
-import toast from "react-hot-toast"
-import { FaGlobe, FaWallet } from "react-icons/fa"
+"use client";
+import { useAuth } from "@/helpers/context/authContext";
+import { useFetch } from "@/helpers/utils/queries";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { FaGlobe, FaWallet } from "react-icons/fa";
 import {
   FiHome,
   FiUsers,
@@ -20,7 +20,7 @@ import {
   FiLogOut,
   FiHelpCircle,
   FiPackage,
-} from "react-icons/fi"
+} from "react-icons/fi";
 
 const data = {
   user: {
@@ -40,31 +40,27 @@ const data = {
       url: "/admin/class",
       icon: FiBarChart2,
       items: [
-        { title: "Classes", url: "/admin/class" , isActive: true },
+        { title: "Classes", url: "/admin/class", isActive: true },
         { title: "Create Class", url: "/admin/class/add" },
-        { title: "Enrolled Class", url: "/admin/class/enrolled"},
+        { title: "Enrolled Class", url: "/admin/class/enrolled" },
       ],
     },
     {
       title: "User",
       url: "/admin/user",
       icon: FiUsers,
-  
     },
     {
       title: "Wallet",
       url: "/admin/wallet",
       icon: FaWallet,
-  
     },
-   
   ],
   navSecondary: [
     {
       title: "Settings",
       url: "/admin/settings",
       icon: FiSettings,
-     
     },
     {
       title: "Help & Support",
@@ -72,7 +68,7 @@ const data = {
       icon: FiHelpCircle,
     },
   ],
-}
+};
 
 function Avatar({ src, name }) {
   const initials = name
@@ -81,7 +77,7 @@ function Avatar({ src, name }) {
         .map((n) => n[0])
         .join("")
         .toUpperCase()
-    : "?"
+    : "?";
 
   return src ? (
     <img
@@ -93,7 +89,7 @@ function Avatar({ src, name }) {
     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-pink-500 text-white font-semibold border-2 border-yellow-400">
       {initials}
     </div>
-  )
+  );
 }
 
 function SidebarMenuItem({
@@ -103,7 +99,7 @@ function SidebarMenuItem({
   expanded,
   toggleExpanded,
 }) {
-  const Icon = item.icon
+  const Icon = item.icon;
   return (
     <li>
       {item.items ? (
@@ -168,17 +164,17 @@ function SidebarMenuItem({
         </a>
       )}
     </li>
-  )
+  );
 }
 
 function AppSidebar({ collapsed, setCollapsed }) {
-  const [expandedItems, setExpandedItems] = useState({})
+  const [expandedItems, setExpandedItems] = useState({});
 
   function toggleExpand(title) {
     setExpandedItems((prev) => ({
       ...prev,
       [title]: !prev[title],
-    }))
+    }));
   }
 
   return (
@@ -253,11 +249,13 @@ function AppSidebar({ collapsed, setCollapsed }) {
         <UserDropdown collapsed={collapsed} />
       </div>
     </aside>
-  )
+  );
 }
 
 function UserDropdown({ collapsed }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+  const {  signout } = useAuth();
+
   return (
     <div className="relative">
       <button
@@ -270,7 +268,9 @@ function UserDropdown({ collapsed }) {
         {!collapsed && (
           <div className="flex flex-col text-left overflow-hidden truncate">
             <span className="font-semibold truncate">{data.user.name}</span>
-            <span className="text-xs text-gray-500 truncate">{data.user.email}</span>
+            <span className="text-xs text-gray-500 truncate">
+              {data.user.email}
+            </span>
           </div>
         )}
         {!collapsed && <FiChevronDown className="ml-auto h-4 w-4" />}
@@ -298,38 +298,43 @@ function UserDropdown({ collapsed }) {
               </a>
             </li>
             <li>
-              <a
-                href="#"
-                className="flex items-center gap-2 px-4 py-2 hover:bg-yellow-50 transition"
+              <button
+                className="flex items-center !cursor-pointer gap-2 px-4 py-2 hover:bg-yellow-50 transition"
+                onClick={() => {
+                  console.log("will logout");
+                  signout();
+                  window.location.href = "/";
+                  toast.success("Logout Successfully");
+                }}
               >
                 <FiLogOut className="h-4 w-4" />
                 Log out
-              </a>
+              </button>
             </li>
           </ul>
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default function DashboardLayout({ children }) {
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
-  const [notifications, setNotifications] = useState(3)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState(3);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { data, isLoading, error } = useFetch("profile", "/user");
-  const {user,setUser, currentUser, signout }=useAuth();
+  const { user, setUser, currentUser } = useAuth();
+
   useEffect(() => {
     if (!data?.data) {
-      const token=localStorage.getItem('token');
-      if(token){
+      const token = localStorage.getItem("token");
+      if (token) {
         return;
+      } else {
+        window.location.href = "/";
       }
-      else{
-        window.location.href="/";
-      }
-    }; 
-  
+    }
+
     if (data?.data?.role !== "admin") {
       toast.error("Please login as a admin");
       window.location.href = "/";
@@ -338,10 +343,12 @@ export default function DashboardLayout({ children }) {
     }
   }, [data]);
 
-
   return (
     <div className="flex h-screen bg-gray-50 text-gray-900">
-      <AppSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+      <AppSidebar
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+      />
 
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Header */}
@@ -391,16 +398,15 @@ export default function DashboardLayout({ children }) {
             className="relative ml-4 rounded-md p-2 hover:bg-gray-100 transition"
             href="/"
           >
-          <FaGlobe className="h-5 w-5" />
-
+            <FaGlobe className="h-5 w-5" />
           </Link>
-
-       
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+          {children}
+        </main>
       </div>
     </div>
-  )
+  );
 }

@@ -168,10 +168,9 @@ const SidebarContent = ({ menuItems, setPathName }) => {
             <a
               className="group flex cursor-pointer items-center gap-[15px]"
               onClick={() => {
-                localStorage.removeItem("token");
-                message.success("Sign out successfully");
-
-                window.location.href = "/";
+                signout();
+                window.location.href = '/';
+                toast.success("Logout Successfully");
               }}
             >
               <HiOutlineLogout className="h-6 w-6 text-textMain group-hover:text-oranage-500" />

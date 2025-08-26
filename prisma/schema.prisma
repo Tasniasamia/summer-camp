@@ -23,7 +23,8 @@ model User {
   image        Json?   
   role         UserRole?
   name         String?
-
+  rate         Float?
+  experience   Int?
   classInstructor Class[] @relation("InstructorToClass")  // multiple classes
    enroll enrollClass[]
 }

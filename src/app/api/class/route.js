@@ -90,33 +90,35 @@ export const GET = async (request) => {
 
 
 
-export const PUT=async(request)=>{
-    try{
-       
-        const data=await request.json();
-        if (!data?.id) {
-            return new Response(JSON.stringify({ error: 'User id is required for Update' }), { status: 400 });
-          }
-        if(data?.id){
-            const  updateClass= await prisma.class.update({
-                where: { id:parseInt(data?.id)},
-                data:data
-              });
-              if (!updateClass) {
-                return new Response(
-                  JSON.stringify({ error: "Class not found" }),
-                  { status: 404 }
-                );
-              }
-              return new Response(JSON.stringify(updateClass), { status: 200 });
+export const PUT = async (request) => {
+  try {
+    const data = await request.json();
 
-        }
-    
+    if (!data?.id) {
+      return new Response(JSON.stringify({ error: 'Class id is required for Update' }), { status: 400 });
     }
-    catch(err){
-     return   new Response(JSON.stringify({error:err.message}),{status:404})
+
+    const classId = parseInt(data.id);
+
+    const { id, ...updateData } = data;
+
+    const updatedClass = await prisma.class.update({
+      where: { id: classId },
+      data: updateData,
+    });
+
+    return new Response(JSON.stringify({ success: true, class: updatedClass }), { status: 200 });
+  } catch (err) {
+    console.error(err);
+
+    if (err.code === 'P2025') {
+      return new Response(JSON.stringify({ error: "Class not found" }), { status: 404 });
     }
-}
+
+    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+  }
+};
+
 
 export async function DELETE(request) {
   try {

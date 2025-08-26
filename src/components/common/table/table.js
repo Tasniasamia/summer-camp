@@ -16,11 +16,22 @@ const CommonTable = ({
   loading,
   onPageChange,
   pagination,
-  setSearch
+  setSearch,
 }) => {
+  // 🟢 Add Index Column
+  const indexColumn = {
+    title: "SL",
+    key: "index",
+    render: (text, record, index) =>
+      pagination
+        ? (data?.page - 1) * (data?.limit || 10) + index + 1
+        : index + 1,
+  };
+
   let cols = noActions
-    ? columns
+    ? [indexColumn, ...columns]
     : [
+        indexColumn,
         ...columns,
         {
           title: "Action",
@@ -29,7 +40,7 @@ const CommonTable = ({
             <div className="flex justify-end gap-2">
               {onView && (
                 <button
-                  className="border cursor-pointer w-8 h-8 rounded-full  border-orange-600  hover:border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white duration-300 p-1 flex items-center justify-center"
+                  className="border cursor-pointer w-8 h-8 rounded-full border-orange-600 hover:border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white duration-300 p-1 flex items-center justify-center"
                   title="View"
                   onClick={() => onView(record)}
                 >
@@ -54,7 +65,7 @@ const CommonTable = ({
 
               {onDelete && record?.disableDelete !== 1 && (
                 <button
-                  className="border cursor-pointer w-8 h-8 border-red-500 rounded-full    hover:border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white duration-300 flex items-center justify-center"
+                  className="border cursor-pointer w-8 h-8 border-red-500 rounded-full hover:border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white duration-300 flex items-center justify-center"
                   title="Delete"
                   onClick={() => onDelete(record)}
                 >
@@ -71,12 +82,12 @@ const CommonTable = ({
       style={{ overflowX: "auto", width: "100%" }}
       className="bg-gradient-to-br from-orange-50 via-yellow-50 to-amber-50 p-6 sm:p-4 shadow-2xl"
     >
-      {isSearch && <SearchInput onSearch={setSearch}/>}
+      {isSearch && <SearchInput onSearch={setSearch} />}
       <AntTable
         columns={cols}
         dataSource={pagination ? data?.docs : data}
         loading={loading}
-        rowKey={(record) => record._id}
+        rowKey={(record) => record._id || record.id}
         pagination={
           pagination
             ? {

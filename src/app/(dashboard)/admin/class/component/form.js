@@ -57,6 +57,7 @@ const ClassForm = ({ id }) => {
   useEffect(() => {
     if (getClass) {
       form.setFieldsValue({
+        ...getClass,
         name: getClass?.name,
         category: getClass?.category,
         price: getClass?.price,
@@ -71,17 +72,17 @@ const ClassForm = ({ id }) => {
         createdAt: getClass?.createdAt ? dayjs(getClass.createdAt) : null,
         rate: getClass?.rate,
         days: getClass?.days,
-        image: getClass?.image
-          ? [
-              {
-                uid: "-1",
-                name: "image.png",
-                status: "done",
-                url: getClass.image.url,
-                public_id: getClass.image.public_id,
-              },
-            ]
-          : [],
+        // image: getClass?.image
+        //   ? [
+        //       {
+        //         uid: "-1",
+        //         name: "image.png",
+        //         status: "done",
+        //         url: getClass?.image?.url,
+        //         public_id: getClass?.image?.public_id,
+        //       },
+        //     ]
+        //   : [],
       });
 
       setDescription(getClass?.description || "");
@@ -109,7 +110,7 @@ const ClassForm = ({ id }) => {
         toast.success(
           id ? "Class updated successfully" : "Class created successfully"
         );
-        form.resetFields();
+       !id &&  form.resetFields();
       } else {
         toast.error(res?.msg || "Something went wrong!");
       }

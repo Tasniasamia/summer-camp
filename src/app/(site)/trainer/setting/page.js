@@ -9,12 +9,13 @@ import {
   Col,
   Space,
 } from "antd";
-import { FaUser, FaEnvelope, FaPhone, FaLock, FaCamera } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaPhone, FaLock, FaCamera, FaStar, FaIdBadge } from "react-icons/fa";
 import ImageInput from "@/components/common/form/image";
 import { useAuth } from "@/helpers/context/authContext";
 import toast from "react-hot-toast";
 import { useFetch, useMutationAction } from "@/helpers/utils/queries";
 import UserDashboardSkeleton from "@/components/skeleton/dashboardSkeleton";
+import { FaEarthAsia } from "react-icons/fa6";
 const { TextArea } = Input;
 
 export default function FormsPage() {
@@ -170,7 +171,26 @@ export default function FormsPage() {
                 size="large"
               />
             </Form.Item>
-
+            <Form.Item
+              label="Rate"
+              name="rate"
+               >
+              <Input
+                prefix={<FaStar className="w-4 h-4" />}
+                placeholder="Enter your rate"
+                size="large"
+              />
+            </Form.Item>
+            <Form.Item
+              label="Experience"
+              name="experience"
+               >
+              <Input
+                prefix={<FaIdBadge className="w-4 h-4" />}
+                placeholder="Enter your experience"
+                size="large"
+              />
+            </Form.Item>
             <Form.Item
               label="Address"
               name="address"
@@ -193,7 +213,7 @@ export default function FormsPage() {
             <button
               type="primary"
               htmlType="submit"
-              className="w-full text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base px-4 shadow-lg"
+              className="w-full !cursor-pointer text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base px-4 shadow-lg"
             >
               {" "}
               Update Profile
@@ -215,7 +235,7 @@ export default function FormsPage() {
 
   const PasswordForm = () => (
     <Card title="Change Password" className="w-full">
-      <Form form={form} layout="vertical" onFinish={onPasswordFinish}>
+      <Form  layout="vertical" onFinish={onPasswordFinish}>
         <Row gutter={16}>
           <Col xs={24} md={24}>
             <Form.Item
@@ -240,7 +260,7 @@ export default function FormsPage() {
             <button
               type="primary"
               htmlType="submit"
-              className="w-full px-4 text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base shadow-lg"
+              className="w-full px-4 !cursor-pointer text-white h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 border-0 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base shadow-lg"
             >
               {" "}
               Save
@@ -249,7 +269,7 @@ export default function FormsPage() {
               type="primary"
               htmlType="submit"
               onClick={() => form.resetFields()}
-              className="w-full px-4  cursor-pointer h-12 rounded-lg border border-gray-200 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base shadow-lg"
+              className="w-full px-4  !cursor-pointer h-12 rounded-lg border border-gray-200 hover:from-yellow-600 hover:to-orange-600 font-semibold text-base shadow-lg"
             >
               {" "}
               Reset

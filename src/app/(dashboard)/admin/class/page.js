@@ -3,6 +3,7 @@ import CommonTable from "@/components/common/table/table";
 import Title from "@/components/common/title";
 import { useFetch, useMutationAction } from "@/helpers/utils/queries";
 import dayjs from "dayjs";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -26,6 +27,12 @@ const Page = () => {
 
 
   const columns = [
+    {title:"Image",dataIndex:"image",key:"image",render:(_,d)=>{
+      console.log("d",d);
+      return (
+        <Image src={d?.image?.secure_url || '/download.png'}  className="h-6 w-auto object-fill " width={1000} height={1000}/>
+      )
+    }},
     { title: "Name", dataIndex: "name", key: "name" },
     {
       title: "Instructor",

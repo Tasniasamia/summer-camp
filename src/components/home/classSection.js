@@ -1,24 +1,18 @@
 "use client";
 import { useState } from "react";
-import {FaHeart} from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 import ClassCard from "../common/card/classCard";
+import { useFetch } from "@/helpers/utils/queries";
+import CustomPagination from "../common/pagination/pagination";
+import { Empty } from "antd";
 
 export default function ClassesSection() {
-  const [wishlist, setWishlist] = useState([]);
-  const [enrolledClasses, setEnrolledClasses] = useState([]);
+  const { data, isLoading, error } = useFetch("class", "/getClasses");
+  const [currentPage, setCurrentPage] = useState(1);
+  console.log("classdata", data);
 
-  const toggleWishlist = (classId) => {
-    setWishlist((prev) =>
-      prev.includes(classId)
-        ? prev.filter((id) => id !== classId)
-        : [...prev, classId]
-    );
-  };
-
-  const enrollInClass = (classId) => {
-    if (!enrolledClasses.includes(classId)) {
-      setEnrolledClasses((prev) => [...prev, classId]);
-    }
+  const handlePageChange = (page) => {
+    setCurrentPage(page); // শুধু state update হবে
   };
 
   const classes = [
@@ -127,47 +121,34 @@ export default function ClassesSection() {
   ];
 
   const categories = [
-    { id: "all", label: "All Classes", count: classes.length },
-    {
-      id: "water",
-      label: "Water Sports",
-      count: classes.filter((c) => c.category === "water").length,
-    },
-    {
-      id: "adventure",
-      label: "Adventure",
-      count: classes.filter((c) => c.category === "adventure").length,
-    },
-    {
-      id: "sports",
-      label: "Sports",
-      count: classes.filter((c) => c.category === "sports").length,
-    },
-    {
-      id: "creative",
-      label: "Creative",
-      count: classes.filter((c) => c.category === "creative").length,
-    },
+    { label: "All", value: "all" },
+    { label: "Water", value: "water" },
+    { label: "Mountain", value: "mountain" },
+    { label: "Yoga", value: "yoga" },
+    { label: "Adventure", value: "adventure" },
+    { label: "Cycling", value: "cycling" },
   ];
-
   const [activeCategory, setActiveCategory] = useState("all");
+  console.log("activeCategory", activeCategory);
 
   const filteredClasses =
     activeCategory === "all"
-      ? classes
-      : classes.filter((c) => c.category === activeCategory);
-
+      ? data?.data?.docs
+      : data?.data?.docs?.filter(
+          (c) => c?.category == activeCategory.toLowerCase()
+        );
+  console.log("filteredClasses", filteredClasses);
   return (
     <section id="classes" className="py-20 bg-white">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <span className="inline-block bg-blue-100 text-blue-800 hover:bg-blue-200 mb-4 px-4 py-1 rounded-full cursor-default">
+          <span className="inline-block bg-orange-100 text-orange-800 hover:bg-orange-200 mb-4 px-4 py-1 rounded-full cursor-default">
             Camp Classes
           </span>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Discover Your{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500">
               Passion
             </span>
           </h2>
@@ -180,48 +161,33 @@ export default function ClassesSection() {
 
         {/* Categories Tabs */}
         <div className="w-full mb-12 grid grid-cols-2 md:grid-cols-5 gap-2 bg-gray-100 p-1 rounded-xl select-none">
-          {categories.map((category) => (
+          {categories.map((category, index) => (
             <button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
+              key={index}
+              onClick={() => setActiveCategory(category?.value)}
               className={`font-medium py-2 rounded-xl transition-colors ${
-                activeCategory === category.id
-                  ? "bg-white text-blue-600 shadow"
-                  : "text-gray-700 hover:bg-white hover:text-blue-600"
+                activeCategory === category?.value
+                  ? "bg-white text-orange-600 shadow"
+                  : "text-gray-700 hover:bg-white hover:text-orange-600"
               }`}
             >
-              {category.label} ({category.count})
+              {category?.label}
             </button>
           ))}
         </div>
 
         {/* Classes Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredClasses.map((classItem,index) => (
-            <ClassCard classItem={classItem} key={index} wishlist={wishlist} setWishlist={setWishlist} enrolledClasses={enrolledClasses} setEnrolledClasses={setEnrolledClasses}/>
-          ))}
-        </div>
-
-        {/* Wishlist Summary */}
-        {wishlist.length > 0 && (
-          <div className="mt-12 bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-6 border border-pink-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <FaHeart className="w-6 h-6 text-pink-500 fill-current" />
-                <div>
-                  <h3 className="font-semibold text-gray-900">Your Wishlist</h3>
-                  <p className="text-sm text-gray-600">
-                    {wishlist.length} class{wishlist.length !== 1 ? "es" : ""}{" "}
-                    saved
-                  </p>
-                </div>
-              </div>
-              <button className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-6 py-3 rounded-lg font-semibold transition">
-                View Wishlist
-              </button>
-            </div>
+        {filteredClasses?.length === 0 ? (
+          <Empty description="No Class" />
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredClasses?.map((classItem, index) => (
+              <ClassCard classItem={classItem} key={index} />
+            ))}
           </div>
         )}
+
+        <CustomPagination data={data?.data} onPageChange={handlePageChange} />
       </div>
     </section>
   );
