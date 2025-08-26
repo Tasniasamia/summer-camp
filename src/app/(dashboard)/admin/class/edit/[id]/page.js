@@ -1,17 +1,15 @@
-"use client";
 import Title from "@/components/common/title";
 import ClassForm from "../../component/form";
-import { useParams } from "next/navigation";
+import { use } from "react";  // Next.js 15 style
 
-
-const page = ({params}) => {
-    const {id}=useParams();
-    return (
-        <div>
-            <Title title="Update Class"/>
-            <ClassForm id={id}/>
-        </div>
-    );
+const Page = ({ params }) => {
+  const resolvedParams = use(params); // unwrap Promise
+  return (
+    <div>
+      <Title title="Update Class" />
+      <ClassForm id={resolvedParams.id} /> {/* এখানে "7" আসবে */}
+    </div>
+  );
 };
 
-export default page;
+export default Page;

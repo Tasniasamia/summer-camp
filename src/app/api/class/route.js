@@ -30,7 +30,7 @@ export const GET = async (request) => {
       const classData = await prisma.class.findUnique({
         where: { id: parseInt(id) },
       });
-
+     console.log("classdata",classData);
       if (!classData) {
         return new Response(
           JSON.stringify({ error: "Class not found" }),
@@ -92,15 +92,14 @@ export const GET = async (request) => {
 
 export const PUT=async(request)=>{
     try{
-        const { searchParams } = new URL(request.url);
-        const id = searchParams.get("id");
+       
         const data=await request.json();
-        if (!id) {
+        if (!data?.id) {
             return new Response(JSON.stringify({ error: 'User id is required for Update' }), { status: 400 });
           }
-        if(id){
+        if(data?.id){
             const  updateClass= await prisma.class.update({
-                where: { id:parseInt(id)},
+                where: { id:parseInt(data?.id)},
                 data:data
               });
               if (!updateClass) {

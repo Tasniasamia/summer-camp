@@ -90,8 +90,8 @@ const Page = () => {
         isSearch={true}
         data={getClass?.data}
         loading={loadingClasses || loadingUsers}
-        onView={(rec) => router.push(`/admin/class/${rec?.name}`)}
-        onEdit={(rec) => router.push(`/admin/class/edit/${rec?.name}`)}
+        onView={(rec) => router.push(`/admin/class/${rec?.id}`)}
+        onEdit={(rec) => router.push(`/admin/class/edit/${rec?.id}`)}
         onDelete={async(rec) =>{
          deleteClass.mutateAsync({id:rec?.id});
 
