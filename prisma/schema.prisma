@@ -29,6 +29,15 @@ model User {
    enroll enrollClass[]
 }
 
+model Otp{
+    id           Int      @id @default(autoincrement())
+    action       String
+    email        String
+    otp          String?
+}
+
+
+
 model Class {
   id          Int      @id @default(autoincrement())
   name        String?
