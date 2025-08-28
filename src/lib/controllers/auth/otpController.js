@@ -35,7 +35,7 @@ export const sendOtp = async (req) => {
         data: { email, otp, action },
       });
     }
-    return { success: true, otp, msg: `Please check your email`, status: 200 };
+    return { success: true, action,otp, msg: `Please check your email`, status: 200 };
   } catch (error) {
     return { success: false, msg: error.message, status: 500 };
   }
