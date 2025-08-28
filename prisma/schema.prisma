@@ -34,6 +34,7 @@ model Otp{
     action       String
     email        String
     otp          String?
+    isVerify     Boolean?
 }
 
 
