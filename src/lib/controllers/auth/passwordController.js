@@ -1,5 +1,6 @@
 import prisma from "@/lib/db";
 import { comparePassword, hashPassword } from "@/lib/helpers/hashing";
+import { verifyToken } from "@/lib/helpers/jwt";
 
 export const forget_password = async (req) => {
   try {
@@ -34,3 +35,40 @@ export const forget_password = async (req) => {
     return { success: false, msg: e.message, status: 400 };
   }
 };
+
+
+export const changePassword=async(req)=>{
+  try{
+  const {password}=await req.json();
+  const authHeader=await req.headers.get("authorization");
+  if(!authHeader){
+    return {
+      success:false,msg:"No Token Provided",status:400
+    }}
+  const token=authHeader.split(" ")[1];
+  const {email}=verifyToken(token);
+  if(password){
+    const newPassword=await hashPassword(password);
+    const updateUser=await prisma.user.update({
+      where:{email:email},
+      data:{password:newPassword}
+    });
+    if(updateUser){
+      return {
+        success:true,
+        status:400,
+        msg:"Password updated successfully"
+      }
+    }
+  }
+
+  }
+  catch(e){
+    return {
+      success:false,
+      msg:e?.message,
+      status:500
+    }
+  }
+  
+}

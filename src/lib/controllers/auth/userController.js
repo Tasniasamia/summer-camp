@@ -1,6 +1,6 @@
-import { createToken } from "@/app/api/user/route";
 import prisma from "@/lib/db";
 import { comparePassword, hashPassword } from "@/lib/helpers/hashing";
+import { generateToken, verifyToken } from "@/lib/helpers/jwt";
 
 export const login = async (req) => {
   try {
@@ -10,7 +10,7 @@ export const login = async (req) => {
     if (findUser && verifyPassword) {
       return {
         success: true,
-        data: { token: createToken({ email: email }) },
+        data: { token: generateToken({ email: email }) },
         msg: "Login Successfully",
         status: 200,
       };
@@ -59,3 +59,20 @@ export const register = async (req) => {
   }
 };
 
+export const getProfile=async(req)=>{
+  try{
+  const authHeader=await req.headers.get("authorization");
+  if(!authHeader){
+    return {
+      success:false,msg:"No Token Provided",status:400
+    }}
+  const token=authHeader.split(" ")[1];
+  const {email}=verifyToken(token);
+  const { password, ...userWithoutPassword }=await prisma.user.findUnique({where:{email:email}});
+  
+  return {success:true,data:userWithoutPassword,msg:"Get user successfully",status:200}
+  }
+  catch(e){
+    return {success:false, msg:e?.message, status:500}
+  }
+}
