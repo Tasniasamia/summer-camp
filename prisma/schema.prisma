@@ -38,7 +38,12 @@ model Otp{
 }
 
 
-
+model category{
+  id          Int      @id @default(autoincrement())
+  name        String
+  image        Json?
+  Class Class? 
+}
 model Class {
   id          Int      @id @default(autoincrement())
   name        String?
@@ -50,12 +55,12 @@ model Class {
   days        Json?     // JSON type
   place       String?
   createdAt   DateTime  @default(now())
-  category    String?  
   sit         Int?
   enrollment  Int?
   status      Boolean   @default(true) 
   image        Json?   
- 
+  category category? @relation( fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  categoryId Int? @unique
   instructor User? @relation("InstructorToClass", fields: [instructorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   instructorId Int?
 

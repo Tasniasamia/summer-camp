@@ -5,6 +5,10 @@ import { verifyToken } from "@/lib/helpers/jwt";
 export const forget_password = async (req) => {
   try {
     const { email, password, otp } = await req.json();
+    const findUser=await prisma.user.findUnique({where:{email:email}});
+    if(!findUser){
+      return {success:false,msg:"User not found",status:400};
+    }
     if (password && email && otp) {
       const { id } = await prisma.otp.findFirst({ where: { otp: otp } });
       await prisma.otp.update({

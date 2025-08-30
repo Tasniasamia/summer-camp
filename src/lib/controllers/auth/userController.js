@@ -4,13 +4,13 @@ import { generateToken, verifyToken } from "@/lib/helpers/jwt";
 
 export const login = async (req) => {
   try {
-    const { password, email } = await req.json();
+    const { password, email ,role} = await req.json();
     const findUser = await prisma.user.findUnique({ where: { email: email } });
     const verifyPassword = await comparePassword(password, findUser?.password);
     if (findUser && verifyPassword) {
       return {
         success: true,
-        data: { token: generateToken({ email: email }) },
+        data: { token: generateToken({ email: email,role:role }) },
         msg: "Login Successfully",
         status: 200,
       };
