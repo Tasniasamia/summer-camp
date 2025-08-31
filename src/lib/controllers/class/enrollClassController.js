@@ -3,8 +3,9 @@ import prisma from "@/lib/db";
 export const enrollClass=async(req)=>{
     try{
         const body = await req.json();
-        const { classId, userId ,role} = body;
-        if(role=="student"){
+        const { classId, userId } = body;
+        const findUser=await prisma.user.findUnique({where:{id:userId}})
+        if(findUser?.role==="student"){
         const classData = await prisma.class.findUnique({
           where: { id: parseInt(classId) },
         });

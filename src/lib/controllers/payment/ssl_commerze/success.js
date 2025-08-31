@@ -20,7 +20,7 @@ export const successSSLcommerze=async(req)=>{
     }
     if (tran_id) {
       try {
-        await fetch(`http://localhost:3000/api/enroll`, {
+        await fetch(`http://localhost:3000/api/class/enroll`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status: "paid", transactionId: tran_id }),
@@ -30,7 +30,7 @@ export const successSSLcommerze=async(req)=>{
         
       }
     }
-    return (`http://localhost:3000/payment/success?tran_id=${tran_id}&amount=${amount}&currency=${currency}`);
+    return `http://localhost:3000/payment/success?tran_id=${tran_id}&amount=${amount}&currency=${currency}`;
 }
 catch(e){
     return {msg:e?.message,success:false,status:500}

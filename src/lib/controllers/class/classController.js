@@ -93,7 +93,8 @@ export const getClass = async (req) => {
           status: 200,
           success: true,
         };
-      } else {
+      } 
+      else {
         const alldata = await prisma.class.findMany({});
         return {
           data: alldata,

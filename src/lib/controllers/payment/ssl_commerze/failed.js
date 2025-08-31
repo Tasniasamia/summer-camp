@@ -8,7 +8,7 @@ export const failedSSLcommerze=async(req)=>{
     const userInfo = JSON.parse(formData.get("value_b") || '{}');
     if (tran_id) {
       try {
-        await fetch(`http://localhost:3000/api/enroll`, {
+        await fetch(`http://localhost:3000/api/class/enroll`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status: "failed", transactionId: tran_id }),
@@ -17,9 +17,8 @@ export const failedSSLcommerze=async(req)=>{
         console.error("Error updating enrollClass:", err);
       }
     }
-    return (
-      `http://localhost:3000/payment/failed?tran_id=${tran_id}&amount=${amount}&currency=${currency}`
-    );
+    return `http://localhost:3000/payment/failed?tran_id=${tran_id}&amount=${amount}&currency=${currency}`
+    
 }
 catch(err){
     return {success:false,status:500,msg:err?.message}

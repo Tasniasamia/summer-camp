@@ -8,7 +8,7 @@ export const cancelSSLcommerze=async(req)=>{
     const userInfo = JSON.parse(formData.get("value_b") || '{}');
     if (tran_id) {
       try {
-        await fetch(`http://localhost:3000/api/enroll`, {
+        await fetch(`http://localhost:3000/api/class/enroll`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status: "cancel", transactionId: tran_id }),
@@ -18,9 +18,8 @@ export const cancelSSLcommerze=async(req)=>{
       }
     }
   
-    return (
-      `http://localhost:3000/payment/cancel?tran_id=${tran_id}&amount=${amount}&currency=${currency}`
-    );
+    return `http://localhost:3000/payment/cancel?tran_id=${tran_id}&amount=${amount}&currency=${currency}`
+    
 }
 catch(err){
     return ({success:false,msg:err.message,status:500})

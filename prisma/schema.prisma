@@ -27,6 +27,7 @@ model User {
   experience   Int?
   classInstructor Class[] @relation("InstructorToClass")  // multiple classes
    enroll enrollClass[]
+   createdAt  DateTime  @default(now())
 }
 
 model Otp{
