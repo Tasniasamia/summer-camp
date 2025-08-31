@@ -68,7 +68,8 @@ export const enrollClass=async(req)=>{
           });
       
           return ({ GatewayPageURL: result.GatewayPageURL ,success:true});
-        } else {
+        } 
+        else {
           return {success:false, msg: "Payment initiation failed", data:result , status: 400 }
          }
         }
