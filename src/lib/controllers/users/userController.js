@@ -87,16 +87,33 @@ export const postUser=async(req)=>{
 
 export const updateUser=async(req)=>{
   try {
-    const data = await req.json();
-    const { id, email, password, address, phone_number, image, role, name } = data;
-   if (!id) {
-      return { msg: "User id is required" ,status: 400,success:false }
+    const headers=req.headers.get("authorization");
+    if(!headers){
+      return {
+        success:false,
+        msg:"Unauthorized Access",
+        status:401
+      }
     }
-   const updatedUser = await prisma.user.update({
-      where: { id: parseInt(id) },
-      data: { email, password, address, phone_number, image, role, name },
-    });
-    return {data:updatedUser,msg:"User updated successfully",success:true,status:200};
+    const token=headers.split(" ")[1];
+    const {email,id,role}=verifyToken(token);
+    const findUser=await prisma.user.findUnique({where:{email:email}});
+    if(findUser){
+      const data = await req.json();
+      const {address,phone_number,image,role,name } = data;
+     if (!id) {
+        return { msg: "User id is required" ,status: 400,success:false }
+      }
+     const updatedUser = await prisma.user.update({
+        where: { id: parseInt(id) },
+        data: { address, phone_number, image, role, name },
+      });
+      return {data:updatedUser,msg:"User updated successfully",success:true,status:200};
+    }
+    else{
+      return {success:false,status:400,msg:"Invalid User"}
+    }
+    
   } catch (error) {
     return {success:false,msg:error.message ,status:500}
   }

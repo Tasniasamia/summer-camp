@@ -83,7 +83,7 @@ export const enrollClass=async(req)=>{
 
 export const updateEnrollClass=async(req)=>{
     try {
-        const data = await req.json();
+       const data = await req.json();
         const { id, classId, userId, status, transactionId } = data;
         if (id || transactionId) {
           if (transactionId) {
@@ -172,7 +172,6 @@ export const getEnrolledClass = async (req) => {
       whereClause = { ...findSearch };
     }
 
-    // data query
     const [docs, totalDocs] = await Promise.all([
       prisma.enrollClass.findMany({
         skip,
@@ -202,7 +201,6 @@ export const getEnrolledClass = async (req) => {
 
     const totalPages = Math.ceil(totalDocs / limit);
 
-    // pagination response একই style এ
     const responseData = {
       success: true,
       statusCode: 200,
