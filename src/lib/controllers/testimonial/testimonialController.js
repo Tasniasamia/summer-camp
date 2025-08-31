@@ -50,7 +50,7 @@ export const deleteTestimonial=async(req)=>{
          }
          const deleteData=await prisma.Testimonial.delete({where:{id:parseInt(id)}});
          if(deleteData){
-            return {status:200,success:true,msg:"Faq deleted successfully"}
+            return {status:200,success:true,msg:"Testimonial deleted successfully"}
          }
     }
     catch(e){

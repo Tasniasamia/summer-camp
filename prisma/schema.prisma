@@ -15,54 +15,54 @@ enum UserRole {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String?  @unique
-  password     String?
-  address      String?
-  phone_number String?
-  image        Json?   
-  role         UserRole?
-  name         String?
-  rate         Float?
-  experience   Int?
-  classInstructor Class[] @relation("InstructorToClass")  // multiple classes
-   enroll enrollClass[]
-   createdAt  DateTime  @default(now())
+  id              Int           @id @default(autoincrement())
+  email           String?       @unique
+  password        String?
+  address         String?
+  phone_number    String?
+  image           Json?
+  role            UserRole?
+  name            String?
+  rate            Float?
+  experience      Int?
+  classInstructor Class[]       @relation("InstructorToClass") // multiple classes
+  enroll          enrollClass[]
+  createdAt       DateTime      @default(now())
 }
 
-model Otp{
-    id           Int      @id @default(autoincrement())
-    action       String
-    email        String
-    otp          String?
-    isVerify     Boolean?
+model Otp {
+  id       Int      @id @default(autoincrement())
+  action   String
+  email    String
+  otp      String?
+  isVerify Boolean?
 }
 
-
-model category{
-  id          Int      @id @default(autoincrement())
-  name        String
-  image        Json?
-  Class Class? 
+model category {
+  id    Int    @id @default(autoincrement())
+  name  String
+  image Json?
+  Class Class?
 }
+
 model Class {
-  id          Int      @id @default(autoincrement())
-  name        String?
-  price       Float?
-  rate        Float?
-  description String?   @db.VarChar(10000)
-  duration    String?
-  time        String?
-  days        Json?     // JSON type
-  place       String?
-  createdAt   DateTime  @default(now())
-  sit         Int?
-  enrollment  Int?
-  status      Boolean   @default(true) 
-  image        Json?   
-  category category? @relation( fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  categoryId Int? @unique
-  instructor User? @relation("InstructorToClass", fields: [instructorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  id           Int       @id @default(autoincrement())
+  name         String?
+  price        Float?
+  rate         Float?
+  description  String?   @db.VarChar(10000)
+  duration     String?
+  time         String?
+  days         Json? // JSON type
+  place        String?
+  createdAt    DateTime  @default(now())
+  sit          Int?
+  enrollment   Int?
+  status       Boolean   @default(true)
+  image        Json?
+  category     category? @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  categoryId   Int?      @unique
+  instructor   User?     @relation("InstructorToClass", fields: [instructorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   instructorId Int?
 
   enroll enrollClass[]
@@ -75,43 +75,84 @@ enum paymentStatus {
   cancel
 }
 
+
 model enrollClass {
   id            Int           @id @default(autoincrement())
   name          String?
-  classId       Int 
-  class         Class         @relation(fields: [classId], references: [id],onDelete: Cascade,onUpdate: Cascade)
-  userId        Int 
-  user          User          @relation(fields: [userId], references: [id],onDelete: Cascade,onUpdate: Cascade)
+  classId       Int
+  class         Class         @relation(fields: [classId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        Int
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   status        paymentStatus @default(pending)
-  transactionId String? @unique
-  createdAt   DateTime  @default(now())
+  transactionId String?       @unique
+  createdAt     DateTime      @default(now())
 }
 
 model Package {
   id        Int      @id @default(autoincrement())
   name      String
-  tagline   String?       
+  tagline   String?
   price     Float
-  features  Json?   
+  features  Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-
-model faq{
+model faq {
   id        Int      @id @default(autoincrement())
-  question String
-  answer   String
+  question  String
+  answer    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
 }
 
-model Testimonial{
+model Testimonial {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  rate        Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model subscribe {
   id        Int      @id @default(autoincrement())
-  name String
-  description   String
-  rate  Float
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model contact{
+  id        Int      @id @default(autoincrement())
+  email     String
+  name      String
+  phone     String
+  message   String
+  reply     String?
+  isReply   Boolean? @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Slug {
+  home
+  about
+  contact
+  terms_condition
+  privacy_policy
+}
+
+model Page {
+  id        Int      @id @default(autoincrement())
+  slug      Slug     @unique
+  content   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Site {
+  id        Int      @id @default(autoincrement())
+  content   Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
