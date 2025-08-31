@@ -19,7 +19,6 @@ export const verifyToken = (token) => {
   }
 };
 
-// -------------------- API Methods --------------------
 export async function GET(request) {
   try {
     const authHeader = request.headers.get("authorization");
