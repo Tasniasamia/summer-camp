@@ -1,8 +1,6 @@
-import { PrismaClient } from "@/generated/prisma";
 import { deleteClass, getClass, postClass, updateClass } from "@/lib/controllers/class/classController";
 import { handleError } from "@/lib/helpers/errorHandler";
 import { NextResponse } from "next/server";
-const prisma = new PrismaClient();
 
 export const POST=async(req)=>{
   try{
