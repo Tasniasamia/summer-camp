@@ -41,11 +41,13 @@ export const getAllCategory = async (req) => {
     const {searchParams} = new URL(req.url);
     let limit = parseInt(searchParams.get("limit"));
     let page = parseInt(searchParams.get("page"));
+    const search=searchParams.get("search");
     if (limit || page) {
       const [docs, totalDocs] = await Promise.all([
         prisma.category.findMany({
           skip: (page - 1) * limit,
           take: limit,
+          where:search
         }),
         prisma.category.count(),
       ]);

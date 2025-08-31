@@ -1,33 +1,3 @@
-//unsigned
-// export async function POST(request) {
-//   try {
-//     const formData = await request.formData();
-//     const file = formData.get('file');
-
-
-
-//     const uploadData = new FormData();
-//     uploadData.append('file', file);
-//     uploadData.append('upload_preset', 'first_preset');
-
-//     const res = await fetch(
-//       `https://api.cloudinary.com/v1_1/dtjf2nn9o/image/upload`,
-//       {
-//         method: 'POST',
-//         body: uploadData,
-//       }
-//     );
-
-//     const image = await res.json();
-//     console.log("image server",image);
-//     return new Response(JSON.stringify(image), { status: 200 });
-//   } catch (error) {
-//     console.error(error);
-//     return new Response(JSON.stringify({ error: 'Upload failed' }), {
-//       status: 500,
-//     });
-//   }
-// }
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({

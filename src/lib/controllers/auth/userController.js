@@ -5,7 +5,12 @@ import { generateToken, verifyToken } from "@/lib/helpers/jwt";
 export const login = async (req) => {
   try {
     const { password, email ,role} = await req.json();
-    const findUser = await prisma.user.findUnique({ where: { email: email } });
+    const findUser = await prisma.user.findFirst({
+      where: {
+        email: email,
+        role: role
+      }
+    });
     const verifyPassword = await comparePassword(password, findUser?.password);
     if (findUser && verifyPassword) {
       return {

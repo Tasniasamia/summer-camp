@@ -1,166 +1,55 @@
 import { PrismaClient } from "@/generated/prisma";
+import { deleteClass, getClass, postClass, updateClass } from "@/lib/controllers/class/classController";
+import { handleError } from "@/lib/helpers/errorHandler";
+import { NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
-export const POST=async(request)=>{
-    try{
-        const data = await request.json();
-        console.log("requestdata",data);
-        if(!data){
-            return new Response ({status:400, error:"No Content"})
-        }
-        const result=await prisma.class.create({
-            data:data
-        })
+export const POST=async(req)=>{
+  try{
+    const data=await postClass(req);
+    return NextResponse.json(data);
+}
+   catch(e){
+  return handleError(NextResponse, e, 500);
 
-        return new Response(JSON.stringify({data:result,success:true}),{status:200})
-    }
-    catch(err){
-        return new Response(JSON.stringify({ error: err.message,msg:err.message ,success:false }),{status:404})
-    }
+}
 
 }
 
 
-export const GET = async (request) => {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
- 
-    if (id) {
-      const classData = await prisma.class.findUnique({
-        where: { id: parseInt(id) },
-      });
-     console.log("classdata",classData);
-      if (!classData) {
-        return new Response(
-          JSON.stringify({ error: "Class not found" }),
-          { status: 404 }
-        );
-      }
+export const GET = async (req) => {
+  try{
+    const data=await getClass(req);
+    return NextResponse.json(data);
+}
+   catch(e){
+  return handleError(NextResponse, e, 500);
 
-      return new Response(JSON.stringify(classData), { status: 200 });
-    } else {
-      // pagination
-      const page = parseInt(searchParams.get("page") || "1");
-      const limit = parseInt(searchParams.get("limit") || "10");
-      const search=searchParams.get("search");
-      const skip = (page - 1) * limit;
-      const findSearch = search
-      ? { name: { contains: search } }
-      : {};
-      const [docs, totalDocs] = await Promise.all([
-        prisma.class.findMany({
-          skip,
-          take: limit,
-          orderBy: { createdAt: "desc" }, 
-          where:findSearch
-        }),
-        prisma.class.count(),
-      ]);
-
-      const totalPages = Math.ceil(totalDocs / limit);
-
-      const responseData = {
-        success: true,
-        statusCode: 200,
-        message: "Classes fetched successfully",
-        data: {
-          docs,
-          totalDocs,
-          limit,
-          page,
-          totalPages,
-          pagingCounter: skip + 1,
-          hasPrevPage: page > 1,
-          hasNextPage: page < totalPages,
-          prevPage: page > 1 ? page - 1 : null,
-          nextPage: page < totalPages ? page + 1 : null,
-        },
-      };
-
-      return new Response(JSON.stringify(responseData), { status: 200 });
-    }
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-    });
-  }
+}
 };
 
 
 
 
-export const PUT = async (request) => {
-  try {
-    const data = await request.json();
+export const PUT = async (req) => {
+  try{
+    const data=await updateClass(req);
+    return NextResponse.json(data);
+}
+   catch(e){
+  return handleError(NextResponse, e, 500);
 
-    if (!data?.id) {
-      return new Response(JSON.stringify({ error: 'Class id is required for Update' }), { status: 400 });
-    }
-
-    const classId = parseInt(data.id);
-
-    const { id, ...updateData } = data;
-
-    const updatedClass = await prisma.class.update({
-      where: { id: classId },
-      data: updateData,
-    });
-
-    return new Response(JSON.stringify({ success: true, class: updatedClass }), { status: 200 });
-  } catch (err) {
-    console.error(err);
-
-    if (err.code === 'P2025') {
-      return new Response(JSON.stringify({ error: "Class not found" }), { status: 404 });
-    }
-
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
-  }
+}
 };
 
 
-export async function DELETE(request) {
-  try {
-    const body = await request.json();
-    console.log("body delete", body);
+export async function DELETE(req) {
+  try{
+    const data=await deleteClass(req);
+    return NextResponse.json(data);
+}
+   catch(e){
+  return handleError(NextResponse, e, 500);
 
-    const id = body?.id;
-    console.log("id body", id);
-
-    if (!id) {
-      return new Response(
-        JSON.stringify({ error: "User id is required for delete" }),
-        { status: 400 }
-      );
-    }
-
-    const deletedUser = await prisma.class.delete({
-      where: { id: parseInt(id) },
-    });
-
-    console.log("deleted User", deletedUser);
-
-    return new Response(
-      JSON.stringify({
-        message: "Class deleted Successfully",
-        user: deletedUser,
-      }),
-      { status: 200 }
-    );
-
-  } catch (error) {
-    console.error("Delete Error:", error);
-
-    if (error?.code === "P2025") {
-      return new Response(JSON.stringify({ error: "Class not found" }), {
-        status: 404,
-      });
-    }
-
-    return new Response(
-      JSON.stringify({ error: error?.message || "Unknown error" }),
-      { status: 500 }
-    );
-  }
+}
 }
