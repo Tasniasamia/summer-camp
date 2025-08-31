@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+import { verifyToken } from "@/lib/helpers/jwt";
 
 export const enrollClass=async(req)=>{
     try{
@@ -130,45 +131,103 @@ export const getEnrollClass=async(req)=>{
 
       }
 }
-export const getEnrolledClass=async(req)=>{
+export const getEnrolledClass = async (req) => {
   try {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return { msg: "Unauthorized Access", success: false, status: 401 };
+    }
+
+    const token = authHeader.split(" ")[1];
+    const payload = verifyToken(token);
+
+    if (!payload?.role) {
+      return { msg: "Invalid Token", success: false, status: 401 };
+    }
+
     const { searchParams } = new URL(req.url);
-
-    const idParam = searchParams.get("id");
-    const userId = idParam ? parseInt(idParam, 10) : undefined;
-
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
     const search = searchParams.get("search");
-    const findSearch = search ? { status: search } : {};
 
-    const whereClause = {
-      ...(userId ? { userId } : {}),
-      ...findSearch,
-    };
+    const skip = (page - 1) * limit;
 
-    const findData = await prisma.enrollClass.findMany({
-      where: whereClause,
-      include: {
+    // search filter
+    const findSearch = search
+      ? { class: { name: { contains: search, mode: "insensitive" } } }
+      : {};
+
+    // role অনুযায়ী filter
+    let whereClause = {};
+    if (payload.role === "student") {
+      whereClause = { userId: payload.id, ...findSearch };
+    } else if (payload.role === "instructor") {
+      whereClause = {
         class: {
-          select: {
-            name: true,
-            price: true,
-            image: true,
-            status: true,
-            category: true,
-            instructor: {
-              select: {
-                name: true,
-                email: true,
+          instructorId: payload.id,
+          ...(findSearch.class || {}),
+        },
+      };
+    } else if (payload.role === "admin") {
+      whereClause = { ...findSearch };
+    }
+
+    // data query
+    const [docs, totalDocs] = await Promise.all([
+      prisma.enrollClass.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        where: whereClause,
+        include: {
+          class: {
+            select: {
+              name: true,
+              price: true,
+              image: true,
+              status: true,
+              category: true,
+              instructor: {
+                select: { name: true, email: true },
               },
             },
           },
+          user: {
+            select: { name: true, email: true },
+          },
         },
+      }),
+      prisma.enrollClass.count({ where: whereClause }),
+    ]);
+
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    // pagination response একই style এ
+    const responseData = {
+      success: true,
+      statusCode: 200,
+      message: "Enroll class fetched successfully",
+      data: {
+        docs,
+        totalDocs,
+        limit,
+        page,
+        totalPages,
+        pagingCounter: skip + 1,
+        hasPrevPage: page > 1,
+        hasNextPage: page < totalPages,
+        prevPage: page > 1 ? page - 1 : null,
+        nextPage: page < totalPages ? page + 1 : null,
       },
-    });
+    };
 
-    return ({data:findData,success:true, status: 200 });
-  } catch (err) {
-    return {success:false,msg:err?.message,status:500}
-
+    return {
+      data: responseData,
+      msg: "Get enrolled classes successfully",
+      status: 200,
+      success: true,
+    };
+  } catch (error) {
+    return { success: false, msg: error.message, status: 500 };
   }
 }

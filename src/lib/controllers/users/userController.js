@@ -5,7 +5,7 @@ export const getUsers=async(req)=>{
     try {
         const authHeader = req.headers.get("authorization");
         if (!authHeader) {
-          return { msg: "Unautorized Access" ,success:false, status: 400 };
+          return { msg: "Unautorized Access" ,success:false, status: 401 };
         }
         const token = authHeader.split(" ")[1];
         const payload=verifyToken(token);

@@ -15,7 +15,7 @@ export const login = async (req) => {
     if (findUser && verifyPassword) {
       return {
         success: true,
-        data: { token: generateToken({ email: email,role:role }) },
+        data: { token: generateToken({ email: email,role:role,id:findUser?.id }) },
         msg: "Login Successfully",
         status: 200,
       };

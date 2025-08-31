@@ -6,7 +6,7 @@ export const postClassCategory = async (req) => {
     const header = await req.headers.get("authorization");
     const token = header.split(" ")[1];
     if (!token) {
-      return { success: false, msg: "Unauthorized Access", status: 400 };
+      return { success: false, msg: "Unauthorized Access", status: 401 };
     }
     if (token) {
       const user = verifyToken(token);
@@ -92,7 +92,7 @@ export const putClassCategory = async (req) => {
     const header = await req.headers.get("authorization");
     const token = header.split(" ")[1];
     if (!token) {
-      return { success: false, msg: "Unauthorized Access", status: 400 };
+      return { success: false, msg: "Unauthorized Access", status: 401 };
     }
     if (token) {
       const user = verifyToken(token);
@@ -121,7 +121,7 @@ export const deleteCateogry = async (req) => {
     const header = await req.headers.get("authorization");
     const token = header.split(" ")[1];
     if (!token) {
-      return { success: false, msg: "Unauthorized Access", status: 400 };
+      return { success: false, msg: "Unauthorized Access", status: 401 };
     }
     if (token) {
       const user = verifyToken(token);
