@@ -75,7 +75,6 @@ enum paymentStatus {
   cancel
 }
 
-
 model enrollClass {
   id            Int           @id @default(autoincrement())
   name          String?
@@ -122,7 +121,7 @@ model subscribe {
   updatedAt DateTime @updatedAt
 }
 
-model contact{
+model contact {
   id        Int      @id @default(autoincrement())
   email     String
   name      String
@@ -157,19 +156,23 @@ model Site {
   updatedAt DateTime @updatedAt
 }
 
-model conversation{
-    id        Int      @id @default(autoincrement())
-    userId    Int 
-    person Int @unique
-    person_name String?
-    person_email String?
-    image Json?
-    role String
+model conversation {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  person       Int      @unique
+  person_name  String?
+  person_email String?
+  image        Json?
+  role         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
-model message{
-      id        Int      @id @default(autoincrement())
-      sender Int
-      message Json?
-      receiver Int
+model message {
+  id        Int      @id @default(autoincrement())
+  sender    Int
+  message   Json?
+  receiver  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
