@@ -45,13 +45,31 @@ export const register = async (req) => {
     if (!findOtp) {
       return ({ success: false, msg: "Invalid OTP", status: 400 });
     }
-    console.log("findOtp",findOtp);
 
     const hashedPassword = await hashPassword(password);
     const createUser = await prisma.user.create({
       data: { email, password: hashedPassword, role, name },
     });
-    console.log("createuser",createUser);
+   const createdUser=await prisma.user.findUnique({where:{email:email}});
+   console.log("createdUser",createdUser);
+   if(createdUser){
+    const findAdmin=await prisma.user.findFirst({where:{role:"admin"}});
+    if(findAdmin){
+      console.log("findAdmin", findAdmin);
+
+      await prisma.conversation.create({
+        data: {
+          userId: createdUser?.id,
+          person: findAdmin?.id,
+          person_email: findAdmin?.email,
+          role: findAdmin?.role,
+          person_name:findAdmin?.name,
+          image:findAdmin?.image
+        }
+      });
+      
+    }
+   }
     await prisma.otp.delete({ where: { id: findOtp.id } });
     return ({
       success: true,

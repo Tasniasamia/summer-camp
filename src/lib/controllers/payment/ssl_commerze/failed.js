@@ -1,3 +1,5 @@
+import prisma from "@/lib/db";
+
 export const failedSSLcommerze=async(req)=>{
     try{
     const formData = await req.formData();
@@ -7,15 +9,11 @@ export const failedSSLcommerze=async(req)=>{
     const classInfo = JSON.parse(formData.get("value_a") || '{}');
     const userInfo = JSON.parse(formData.get("value_b") || '{}');
     if (tran_id) {
-      try {
-        await fetch(`http://localhost:3000/api/class/enroll`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: "failed", transactionId: tran_id }),
-        });
-      } catch (err) {
-        console.error("Error updating enrollClass:", err);
-      }
+     await prisma.enrollClass.update({
+        where: { transactionId: tran_id },
+        data: { status: "failed" },
+      });
+      
     }
     return `http://localhost:3000/payment/failed?tran_id=${tran_id}&amount=${amount}&currency=${currency}`
     
